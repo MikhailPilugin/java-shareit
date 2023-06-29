@@ -9,6 +9,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private final Map<Integer,User> userMap;
+    static String delEmail;
 
     @Override
     public Map<Integer, User> findAll() {
@@ -34,6 +35,10 @@ public class UserRepositoryImpl implements UserRepository {
         Set<String> email = new HashSet<>();
         for (Map.Entry<Integer, User> integerUserEntry : userMap.entrySet()) {
             email.add(integerUserEntry.getValue().getEmail());
+        }
+
+        if (delEmail != null) {
+            email.remove(delEmail);
         }
 
         if (email.contains(user.getEmail())) {
@@ -75,5 +80,15 @@ public class UserRepositoryImpl implements UserRepository {
         userMap.replace(userId, newUser);
 
         return newUser;
+    }
+
+    @Override
+    public void delete(Integer userId) {
+        for (Map.Entry<Integer, User> userEntry : userMap.entrySet()) {
+            if (userEntry.getValue().getId() == userId) {
+                delEmail = userEntry.getValue().getEmail();
+                userMap.remove(userId, userEntry);
+            }
+        }
     }
 }
