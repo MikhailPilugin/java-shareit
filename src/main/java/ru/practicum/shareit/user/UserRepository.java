@@ -1,8 +1,12 @@
 package ru.practicum.shareit.user;
 
-import java.util.List;
+import java.util.Map;
 
 public interface UserRepository {
-    List<User> findAll();
-    User save(User user);
+    Map<Integer, User> findAll();
+
+    User get(Integer userId);
+    User add(User user);
+
+    User update(User user, Integer userId);
 }

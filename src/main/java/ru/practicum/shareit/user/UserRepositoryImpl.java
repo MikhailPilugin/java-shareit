@@ -3,37 +3,77 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.List;
+import java.util.*;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    private final List<User> userList;
+    private final Map<Integer,User> userMap;
 
     @Override
-    public List<User> findAll() {
-        return userList;
+    public Map<Integer, User> findAll() {
+        return userMap;
     }
 
     @Override
-    public User save(User user) {
+    public User get(Integer userId) {
+        User user = new User();
 
-        if (userList.size() > 0) {
-            for (User user1 : userList) {
-                if (user1.getEmail().equals(user.getEmail())) {
-                    throw new IllegalArgumentException("Duplicate email");
-                }
+        for (Map.Entry<Integer, User> integerUserEntry : userMap.entrySet()) {
+            if (integerUserEntry.getValue().getId() == userId) {
+                user = integerUserEntry.getValue();
+                break;
             }
         }
 
-        if (userList.size() > 0) {
-            user.setId(userList.size() + 1);
-            userList.add(user);
+        return user;
+    }
+
+    @Override
+    public User add(User user) {
+        Set<String> email = new HashSet<>();
+        for (Map.Entry<Integer, User> integerUserEntry : userMap.entrySet()) {
+            email.add(integerUserEntry.getValue().getEmail());
+        }
+
+        if (email.contains(user.getEmail())) {
+            throw new IllegalArgumentException("Email is exist");
+        }
+
+        if (userMap.size() > 0) {
+            int index = userMap.size() + 1;
+            user.setId(index);
+            userMap.putIfAbsent(index, user);
         } else {
             user.setId(1);
-            userList.add(user);
+            userMap.put(1, user);
         }
 
         return user;
+    }
+
+    @Override
+    public User update(User user, Integer userId) {
+        User newUser = new User();
+
+        newUser = userMap.get(userId);
+
+        if (user.getName() != null) {
+            newUser.setName(user.getName());
+        }
+
+        if (user.getEmail() != null) {
+            for (Map.Entry<Integer, User> userEntry : userMap.entrySet()) {
+                if (userEntry.getValue().getEmail().equals(user.getEmail()) && userEntry.getValue().getId() != userId) {
+                    throw new IllegalArgumentException("Email is exist already");
+                }
+            }
+
+            newUser.setEmail(user.getEmail());
+        }
+
+        userMap.replace(userId, newUser);
+
+        return newUser;
     }
 }
