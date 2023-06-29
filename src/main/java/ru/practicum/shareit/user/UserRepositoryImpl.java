@@ -8,7 +8,7 @@ import java.util.*;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    private final Map<Integer,User> userMap;
+    public static Map<Integer, User> userMap = new HashMap<>();
     static String delEmail;
 
     @Override
