@@ -11,5 +11,7 @@ public interface ItemRepository {
 
     ItemDto add(long userId, ItemDto item);
 
+    ItemDto update(long itemId, ItemDto item, long userId);
+
     void deleteItem(long userId, long itemId);
 }

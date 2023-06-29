@@ -1,6 +1,7 @@
 package ru.practicum.shareit.item.model;
 
 import lombok.Data;
+import lombok.NonNull;
 import ru.practicum.shareit.request.ItemRequest;
 
 /**
@@ -18,8 +19,14 @@ import ru.practicum.shareit.request.ItemRequest;
 @Data
 public class Item {
     private long id;
+
+    @NonNull
     private String name;
+
+    @NonNull
     private String description;
+
+    @NonNull
     private boolean available;
     private long owner;
     private ItemRequest request;

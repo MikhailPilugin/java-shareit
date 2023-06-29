@@ -7,7 +7,9 @@ import ru.practicum.shareit.exceptions.ErrorResponse;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
 
+import javax.validation.Valid;
 import java.util.List;
 
 /**
@@ -26,9 +28,15 @@ public class ItemController {
 //    }
 
     @PostMapping
-    public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId,
+    public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid
                     @RequestBody ItemDto item) {
         return itemService.add(userId, item);
+    }
+
+    @PatchMapping("/{itemId}")
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId,
+                          @RequestBody ItemDto item, @PathVariable Integer itemId) {
+        return itemService.update(itemId, item, userId);
     }
 
 //    @DeleteMapping("/{itemId}")

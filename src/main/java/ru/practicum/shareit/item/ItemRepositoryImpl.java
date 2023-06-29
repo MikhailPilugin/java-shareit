@@ -5,6 +5,7 @@ import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserRepositoryImpl;
 
 import java.util.*;
@@ -69,6 +70,31 @@ public class ItemRepositoryImpl implements ItemRepository {
         } else {
             item.setId(1);
             itemMap.put((int) userId, item);
+        }
+
+        return item;
+    }
+
+    @Override
+    public ItemDto update(long itemId, ItemDto item, long userId) {
+
+        System.out.println("Users size: " + UserRepositoryImpl.userMap.values());
+        System.out.println("Items size: " + itemMap.values());
+
+        for (int i = 1; i <= itemMap.size(); i++) {
+            if (itemMap.get(i).getId() == itemId) {
+                if (itemMap.get(i).getOwner() == userId) {
+                    long ownerId = itemMap.get(i).getOwner();
+//                    Boolean available = itemMap.get(i).getAvailable();
+
+                    item.setOwner(ownerId);
+//                    item.setAvailable(available);
+                    itemMap.replace(i, item);
+                } else {
+                    throw new IllegalArgumentException("Wrong user id");
+                }
+                break;
+            }
         }
 
         return item;

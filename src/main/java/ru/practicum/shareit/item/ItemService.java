@@ -11,5 +11,7 @@ public interface ItemService {
 
     ItemDto add(Long userId, ItemDto item);
 
+    ItemDto update(long itemId, ItemDto item, long userId);
+
     void deleteItem(long userId, long itemId);
 }
