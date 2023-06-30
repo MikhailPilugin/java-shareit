@@ -2,7 +2,6 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
@@ -10,7 +9,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
-public class ItemServiceImpl implements ItemService{
+public class ItemServiceImpl implements ItemService {
     private final ItemRepositoryImpl itemRepository;
 
     @Override
@@ -24,7 +23,7 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public Item add(Long userId, Item item){
+    public Item add(Long userId, Item item) {
 
         if (item.getAvailable() == null) {
             throw new RuntimeException("There is no available parameter in the request");
