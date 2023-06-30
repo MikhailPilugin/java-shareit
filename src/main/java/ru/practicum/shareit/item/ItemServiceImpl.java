@@ -12,13 +12,13 @@ public class ItemServiceImpl implements ItemService{
     private final ItemRepositoryImpl itemRepository;
 
     @Override
-    public Collection<ItemDto> getAll() {
-        return itemRepository.getAll().values();
+    public Collection<ItemDto> getAll(Long userId) {
+        return itemRepository.getAll(userId).values();
     }
 
     @Override
-    public Collection<ItemDto> getById(long userId) {
-        return itemRepository.getById(userId).values();
+    public ItemDto getById(Long userId, Long itemId) {
+        return itemRepository.getById(userId, itemId);
     }
 
     @Override

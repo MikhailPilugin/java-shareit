@@ -10,6 +10,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 
 import javax.validation.Valid;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -22,10 +23,16 @@ import java.util.List;
 public class ItemController {
     private final ItemServiceImpl itemService;
 
-//    @GetMapping
-//    public List<ItemDto> get(@RequestHeader("X-Sharer-User-Id") long userId) {
-//        return itemService.get(userId);
-//    }
+    @GetMapping()
+    public Collection<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
+        return itemService.getAll(userId);
+    }
+
+    @GetMapping("/{itemId}")
+    public ItemDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
+                                   @PathVariable Long itemId) {
+        return itemService.getById(userId, itemId);
+    }
 
     @PostMapping
     public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid

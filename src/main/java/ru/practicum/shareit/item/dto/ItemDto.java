@@ -1,12 +1,8 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import ru.practicum.shareit.request.ItemRequest;
-
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotEmpty;
 
 /**
  * TODO Sprint add-controllers.

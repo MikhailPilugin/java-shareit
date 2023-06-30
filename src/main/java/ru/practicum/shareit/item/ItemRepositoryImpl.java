@@ -2,13 +2,14 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import ru.practicum.shareit.exceptions.ValidationException;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.user.User;
-import ru.practicum.shareit.user.UserRepository;
 import ru.practicum.shareit.user.UserRepositoryImpl;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
@@ -16,28 +17,50 @@ public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Integer, ItemDto> itemMap;
 
     @Override
-    public Map<Integer, ItemDto> getAll() {
-        return itemMap;
-    }
+    public Map<Integer, ItemDto> getAll(Long userId) {
+        Map<Integer, ItemDto> userItemsMap = new HashMap<>();
 
-    @Override
-    public Map<Integer, ItemDto> getById(long userId) {
-        Map<Integer, ItemDto> userItemMap = new HashMap<>();
-
-        if (!itemMap.isEmpty()) {
-            for (int i = 1; i <= itemMap.size(); i++) {
-                if (itemMap.get(i).getOwner() == userId) {
-                    if (!userItemMap.isEmpty()) {
-                        int index = itemMap.size() + 1;
-                        userItemMap.put(index, itemMap.get(i));
-                    } else {
-                        userItemMap.put(1, itemMap.get(i));
-                    }
+        for (Map.Entry<Integer, ItemDto> itemDtoEntry : itemMap.entrySet()) {
+            if (itemDtoEntry.getValue().getOwner() == userId) {
+                if (userItemsMap.size() > 0) {
+                    userItemsMap.put(userItemsMap.size() + 1, itemDtoEntry.getValue());
+                } else {
+                    userItemsMap.put(1, itemDtoEntry.getValue());
                 }
             }
         }
 
-        return userItemMap;
+        return userItemsMap;
+    }
+
+    @Override
+    public ItemDto getById(Long userId, Long itemId) {
+        ItemDto item = new ItemDto();
+
+        System.out.println("Items: " + itemMap.values());
+
+        if (!itemMap.isEmpty()) {
+            for (int i = 1; i <= itemMap.size(); i++) {
+                if (itemMap.get(i).getId() == itemId) {
+//                    Long id = itemMap.get(i).getId();
+//                    String name = itemMap.get(i).getName();
+//                    String description = itemMap.get(i).getDescription();
+//                    Boolean available = itemMap.get(i).getAvailable();
+//                    Long owner = itemMap.get(i).getOwner();
+//
+//                    item.setId(id);
+//                    item.setName(name);
+//                    item.setDescription(description);
+//                    item.setAvailable(available);
+//                    item.setOwner(owner);
+
+                    item = itemMap.get(i);
+                    break;
+                }
+            }
+        }
+
+        return item;
     }
 
     @Override
@@ -77,9 +100,6 @@ public class ItemRepositoryImpl implements ItemRepository {
 
     @Override
     public ItemDto update(long itemId, ItemDto item, long userId) {
-
-//        System.out.println("Users size: " + UserRepositoryImpl.userMap.values());
-//        System.out.println("Items size: " + itemMap.values());
 
         for (int i = 1; i <= itemMap.size(); i++) {
             if (itemMap.get(i).getId() == itemId) {

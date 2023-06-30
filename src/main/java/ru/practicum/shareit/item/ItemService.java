@@ -5,9 +5,9 @@ import ru.practicum.shareit.item.dto.ItemDto;
 import java.util.Collection;
 
 public interface ItemService {
-    Collection<ItemDto> getAll();
+    Collection<ItemDto> getAll(Long userId);
 
-    Collection<ItemDto> getById(long userId);
+    ItemDto getById(Long userId, Long itemId);
 
     ItemDto add(Long userId, ItemDto item);
 
