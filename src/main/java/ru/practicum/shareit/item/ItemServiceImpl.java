@@ -24,17 +24,17 @@ public class ItemServiceImpl implements ItemService{
     @Override
     public ItemDto add(Long userId, ItemDto item){
 
-//        if (item.getAvailable() == null) {
-//            throw new RuntimeException("There is no available parameter in the request");
-//        }
+        if (item.getAvailable() == null) {
+            throw new RuntimeException("There is no available parameter in the request");
+        }
 
-//        if (item.getName().isEmpty() || item.getName().isBlank()) {
-//            throw new RuntimeException("There is no name in the request");
-//        }
+        if (item.getName().isEmpty() || item.getName().isBlank()) {
+            throw new RuntimeException("There is no name in the request");
+        }
 
-//        if (item.getDescription() == null) {
-//            throw new RuntimeException("There is no description in the request");
-//        }
+        if (item.getDescription() == null) {
+            throw new RuntimeException("There is no description in the request");
+        }
 
         return itemRepository.add(userId, item);
     }

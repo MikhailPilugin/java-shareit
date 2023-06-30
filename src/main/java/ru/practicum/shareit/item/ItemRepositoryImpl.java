@@ -78,17 +78,32 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public ItemDto update(long itemId, ItemDto item, long userId) {
 
-        System.out.println("Users size: " + UserRepositoryImpl.userMap.values());
-        System.out.println("Items size: " + itemMap.values());
+//        System.out.println("Users size: " + UserRepositoryImpl.userMap.values());
+//        System.out.println("Items size: " + itemMap.values());
 
         for (int i = 1; i <= itemMap.size(); i++) {
             if (itemMap.get(i).getId() == itemId) {
                 if (itemMap.get(i).getOwner() == userId) {
                     long ownerId = itemMap.get(i).getOwner();
-//                    Boolean available = itemMap.get(i).getAvailable();
 
+                    if (item.getName() == null) {
+                        String name = itemMap.get(i).getName();
+                        item.setName(name);
+                    }
+
+                    if (item.getDescription() == null) {
+                        String description = itemMap.get(i).getDescription();
+                        item.setDescription(description);
+                    }
+
+                    if (item.getAvailable() == null) {
+                        boolean available = itemMap.get(i).getAvailable();
+                        item.setAvailable(available);
+                    }
+
+                    item.setId(itemId);
                     item.setOwner(ownerId);
-//                    item.setAvailable(available);
+
                     itemMap.replace(i, item);
                 } else {
                     throw new IllegalArgumentException("Wrong user id");

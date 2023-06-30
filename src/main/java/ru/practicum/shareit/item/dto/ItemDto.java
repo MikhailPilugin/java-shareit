@@ -15,19 +15,10 @@ import javax.validation.constraints.NotEmpty;
 @Data
 @RequiredArgsConstructor
 public class ItemDto {
+
     private long id;
-
-    @NonNull
-    @NotEmpty
-    @NotBlank
-    private final String name;
-
-    @NonNull
-    @NotEmpty
-    @NotBlank
-    private final String description;
-
-    @NonNull
+    private String name;
+    private String description;
     private Boolean available;
     private long owner;
     private ItemRequest request;
