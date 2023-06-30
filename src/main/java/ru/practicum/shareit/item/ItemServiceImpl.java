@@ -3,8 +3,10 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 
 import java.util.Collection;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -12,17 +14,17 @@ public class ItemServiceImpl implements ItemService{
     private final ItemRepositoryImpl itemRepository;
 
     @Override
-    public Collection<ItemDto> getAll(Long userId) {
+    public Collection<Item> getAll(Long userId) {
         return itemRepository.getAll(userId).values();
     }
 
     @Override
-    public ItemDto getById(Long userId, Long itemId) {
+    public Item getById(Long userId, Long itemId) {
         return itemRepository.getById(userId, itemId);
     }
 
     @Override
-    public ItemDto add(Long userId, ItemDto item){
+    public Item add(Long userId, Item item){
 
         if (item.getAvailable() == null) {
             throw new RuntimeException("There is no available parameter in the request");
@@ -40,7 +42,12 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public ItemDto update(long itemId, ItemDto item, long userId) {
+    public List<Item> search(Long userId, String text) {
+        return itemRepository.search(userId, text);
+    }
+
+    @Override
+    public Item update(long itemId, Item item, long userId) {
         return itemRepository.update(itemId, item, userId);
     }
 

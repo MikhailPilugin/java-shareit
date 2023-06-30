@@ -3,13 +3,16 @@ package ru.practicum.shareit.user;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     public static Map<Integer, User> userMap = new HashMap<>();
-    static String delEmail;
+    static int idUser = 1;
 
     @Override
     public Map<Integer, User> findAll() {
@@ -26,7 +29,6 @@ public class UserRepositoryImpl implements UserRepository {
                 break;
             }
         }
-
         return user;
     }
 
@@ -37,31 +39,24 @@ public class UserRepositoryImpl implements UserRepository {
             email.add(integerUserEntry.getValue().getEmail());
         }
 
-        if (delEmail != null) {
-            email.remove(delEmail);
-        }
-
         if (email.contains(user.getEmail())) {
             throw new IllegalArgumentException("Email is exist");
         }
 
         if (userMap.size() > 0) {
-            int index = userMap.size() + 1;
-            user.setId(index);
-            userMap.putIfAbsent(index, user);
+            ++idUser;
+            user.setId(idUser);
+            userMap.putIfAbsent(idUser, user);
         } else {
-            user.setId(1);
-            userMap.put(1, user);
+            user.setId(idUser);
+            userMap.put(idUser, user);
         }
-
         return user;
     }
 
     @Override
     public User update(User user, Integer userId) {
-        User newUser = new User();
-
-        newUser = userMap.get(userId);
+        User newUser = userMap.get(userId);
 
         if (user.getName() != null) {
             newUser.setName(user.getName());
@@ -73,7 +68,6 @@ public class UserRepositoryImpl implements UserRepository {
                     throw new IllegalArgumentException("Email is exist already");
                 }
             }
-
             newUser.setEmail(user.getEmail());
         }
 
@@ -84,11 +78,15 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(Integer userId) {
+        Map<Integer, User> newUserMap = new HashMap<>();
+
         for (Map.Entry<Integer, User> userEntry : userMap.entrySet()) {
-            if (userEntry.getValue().getId() == userId) {
-                delEmail = userEntry.getValue().getEmail();
-                userMap.remove(userId, userEntry);
+            if (userEntry.getValue().getId() != userId) {
+                newUserMap.put((int) userEntry.getValue().getId(), userEntry.getValue());
             }
         }
+
+        userMap.clear();
+        userMap = newUserMap;
     }
 }

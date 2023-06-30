@@ -1,17 +1,21 @@
 package ru.practicum.shareit.item;
 
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 
+import java.util.List;
 import java.util.Map;
 
 public interface ItemRepository {
-    Map<Integer, ItemDto> getAll(Long userId);
+    Map<Integer, Item> getAll(Long userId);
 
-    ItemDto getById(Long userId, Long itemId);
+    Item getById(Long userId, Long itemId);
 
-    ItemDto add(long userId, ItemDto item);
+    List<Item> search(Long userId, String text);
 
-    ItemDto update(long itemId, ItemDto item, long userId);
+    Item add(long userId, Item item);
+
+    Item update(long itemId, Item item, long userId);
 
     void deleteItem(long userId, long itemId);
 }

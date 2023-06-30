@@ -3,24 +3,24 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.user.User;
 import ru.practicum.shareit.user.UserRepositoryImpl;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Repository
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
-    private final Map<Integer, ItemDto> itemMap;
+    private final Map<Integer, Item> itemMap;
 
     @Override
-    public Map<Integer, ItemDto> getAll(Long userId) {
-        Map<Integer, ItemDto> userItemsMap = new HashMap<>();
+    public Map<Integer, Item> getAll(Long userId) {
+        Map<Integer, Item> userItemsMap = new HashMap<>();
 
-        for (Map.Entry<Integer, ItemDto> itemDtoEntry : itemMap.entrySet()) {
+        for (Map.Entry<Integer, Item> itemDtoEntry : itemMap.entrySet()) {
             if (itemDtoEntry.getValue().getOwner() == userId) {
                 if (userItemsMap.size() > 0) {
                     userItemsMap.put(userItemsMap.size() + 1, itemDtoEntry.getValue());
@@ -34,37 +34,50 @@ public class ItemRepositoryImpl implements ItemRepository {
     }
 
     @Override
-    public ItemDto getById(Long userId, Long itemId) {
-        ItemDto item = new ItemDto();
-
-        System.out.println("Items: " + itemMap.values());
+    public Item getById(Long userId, Long itemId) {
+        Item item = new Item();
 
         if (!itemMap.isEmpty()) {
             for (int i = 1; i <= itemMap.size(); i++) {
                 if (itemMap.get(i).getId() == itemId) {
-//                    Long id = itemMap.get(i).getId();
-//                    String name = itemMap.get(i).getName();
-//                    String description = itemMap.get(i).getDescription();
-//                    Boolean available = itemMap.get(i).getAvailable();
-//                    Long owner = itemMap.get(i).getOwner();
-//
-//                    item.setId(id);
-//                    item.setName(name);
-//                    item.setDescription(description);
-//                    item.setAvailable(available);
-//                    item.setOwner(owner);
-
                     item = itemMap.get(i);
                     break;
                 }
             }
         }
-
         return item;
     }
 
     @Override
-    public ItemDto add(long userId, ItemDto item) {
+    public List<Item> search(Long userId, String text) {
+        List<Item> itemDtoList = new ArrayList<>();
+
+        if (!text.isEmpty()) {
+            Pattern pattern = Pattern.compile(text.toLowerCase(Locale.ROOT));
+
+            for (Map.Entry<Integer, Item> itemDtoEntry : itemMap.entrySet()) {
+                String searchName = itemDtoEntry.getValue().getName().toLowerCase();
+                String searchDescription = itemDtoEntry.getValue().getDescription().toLowerCase();
+
+                Matcher matcherName = pattern.matcher(searchName);
+                Matcher matcherDescription = pattern.matcher(searchDescription);
+
+                boolean matchNameFound = matcherName.find();
+                boolean matchDescriptionFound = matcherDescription.find();
+
+                if (matchNameFound || matchDescriptionFound) {
+                    if (itemDtoEntry.getValue().getAvailable() == true) {
+                        itemDtoList.add(itemDtoEntry.getValue());
+                    }
+                }
+            }
+        }
+
+        return itemDtoList;
+    }
+
+    @Override
+    public Item add(long userId, Item item) {
         boolean userIsFounded = false;
 
         for (Map.Entry<Integer, User> userEntry : UserRepositoryImpl.userMap.entrySet()) {
@@ -78,66 +91,87 @@ public class ItemRepositoryImpl implements ItemRepository {
         }
 
         item.setOwner(userId);
-        Set<Long> itemIdSet = new HashSet<>();
+        Integer idItem = itemMap.size();
 
-        if (!itemMap.isEmpty()) {
-            for (Map.Entry<Integer, ItemDto> itemDtoEntry : itemMap.entrySet()) {
-                itemIdSet.add(itemDtoEntry.getValue().getId());
-            }
-        }
-
-        if (!itemIdSet.isEmpty()) {
-            int itemId = itemIdSet.size() +1;
-            item.setId(itemId);
-            itemMap.put((int) userId, item);
+        if (idItem > 0) {
+            item.setId(idItem + 1);
+            itemMap.put(idItem + 1, item);
         } else {
             item.setId(1);
-            itemMap.put((int) userId, item);
+            itemMap.put(1, item);
         }
 
         return item;
     }
 
     @Override
-    public ItemDto update(long itemId, ItemDto item, long userId) {
+    public Item update(long itemId, Item item, long userId) {
+        Item itemDto = new Item();
+
+        Long id;
+        if (item.getId() == 0) {
+            id = null;
+        } else {
+            id = item.getId();
+        }
+
+        String name = item.getName();
+        String description = item.getDescription();
+        Boolean available = item.getAvailable();
+
+        Long ownerId;
+        if (item.getOwner() == 0) {
+            ownerId = null;
+        } else {
+            ownerId = item.getOwner();
+        }
 
         for (int i = 1; i <= itemMap.size(); i++) {
             if (itemMap.get(i).getId() == itemId) {
                 if (itemMap.get(i).getOwner() == userId) {
-                    long ownerId = itemMap.get(i).getOwner();
 
-                    if (item.getName() == null) {
-                        String name = itemMap.get(i).getName();
-                        item.setName(name);
+                    if (name == null) {
+                        String newName = itemMap.get(i).getName();
+                        itemDto.setName(newName);
+                    } else {
+                        itemDto.setName(name);
                     }
 
-                    if (item.getDescription() == null) {
-                        String description = itemMap.get(i).getDescription();
-                        item.setDescription(description);
+                    if (description == null) {
+                        String newDescription = itemMap.get(i).getDescription();
+                        itemDto.setDescription(newDescription);
+                    } else {
+                        itemDto.setDescription(description);
                     }
 
-                    if (item.getAvailable() == null) {
-                        boolean available = itemMap.get(i).getAvailable();
-                        item.setAvailable(available);
+                    if (available == null) {
+                        boolean newAvailable = itemMap.get(i).getAvailable();
+                        itemDto.setAvailable(newAvailable);
+                    } else {
+                        itemDto.setAvailable(available);
                     }
 
-                    item.setId(itemId);
-                    item.setOwner(ownerId);
+                    itemDto.setId(itemId);
 
-                    itemMap.replace(i, item);
+                    if (ownerId != null) {
+                        itemDto.setOwner(ownerId);
+                    } else {
+                        itemDto.setOwner(userId);
+                    }
+
+                    itemMap.put(i, itemDto);
                 } else {
                     throw new IllegalArgumentException("Wrong user id");
                 }
-                break;
             }
         }
 
-        return item;
+        return itemDto;
     }
 
     @Override
     public void deleteItem(long userId, long itemId) {
-        for (Map.Entry<Integer, ItemDto> itemDtoEntry : itemMap.entrySet()) {
+        for (Map.Entry<Integer, Item> itemDtoEntry : itemMap.entrySet()) {
             if (itemDtoEntry.getValue().getOwner() == userId && itemDtoEntry.getValue().getId() == itemId) {
                 itemMap.remove(userId, itemDtoEntry);
             }
