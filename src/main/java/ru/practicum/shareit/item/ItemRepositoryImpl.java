@@ -79,8 +79,14 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item add(long userId, Item item) {
         boolean userIsFounded = false;
 
-        for (Map.Entry<Integer, User> userEntry : UserRepositoryImpl.userMap.entrySet()) {
-            if (userEntry.getValue().getId() == userId) {
+//        for (Map.Entry<Integer, User> userEntry : UserRepositoryImpl.userMap.entrySet()) {
+//            if (userEntry.getValue().getId() == userId) {
+//                userIsFounded = true;
+//            }
+//        }
+
+        for (Integer integer : UserRepositoryImpl.setId) {
+            if (integer == userId) {
                 userIsFounded = true;
             }
         }

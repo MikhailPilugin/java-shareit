@@ -11,8 +11,9 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    public static Map<Integer, User> userMap = new HashMap<>();
-    static int idUser = 1;
+    private Map<Integer, User> userMap = new HashMap<>();
+    public static Set<Integer> setId = new HashSet<>();
+    private int idUser = 1;
 
     @Override
     public Map<Integer, User> findAll() {
@@ -47,9 +48,11 @@ public class UserRepositoryImpl implements UserRepository {
             ++idUser;
             user.setId(idUser);
             userMap.putIfAbsent(idUser, user);
+            setId.add(idUser);
         } else {
             user.setId(idUser);
             userMap.put(idUser, user);
+            setId.add(idUser);
         }
         return user;
     }
