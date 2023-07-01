@@ -78,15 +78,10 @@ public class UserRepositoryImpl implements UserRepository {
 
     @Override
     public void delete(Integer userId) {
-        Map<Integer, User> newUserMap = new HashMap<>();
-
         for (Map.Entry<Integer, User> userEntry : userMap.entrySet()) {
-            if (userEntry.getValue().getId() != userId) {
-                newUserMap.put((int) userEntry.getValue().getId(), userEntry.getValue());
+            if (userEntry.getValue().getId() == userId) {
+                userMap.remove(userId);
             }
         }
-
-        userMap.clear();
-        userMap = newUserMap;
     }
 }

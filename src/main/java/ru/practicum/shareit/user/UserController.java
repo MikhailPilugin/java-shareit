@@ -10,7 +10,7 @@ import java.util.Collection;
 @RequestMapping(path = "/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserServiceImpl userService;
+    private final UserService userService;
 
     @GetMapping
     public Collection<User> getAll() {
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{userId}")
-    public void delUser(@PathVariable Integer userId) {
+    public void deleteUser(@PathVariable Integer userId) {
         userService.deleteUser(userId);
     }
 }
