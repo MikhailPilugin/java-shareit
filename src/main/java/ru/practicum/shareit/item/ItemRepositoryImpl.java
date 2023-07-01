@@ -13,6 +13,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Integer, Item> itemMap;
+//    private UserRepositoryImpl userRepository;
 
     @Override
     public Map<Integer, Item> getAll(Long userId) {
@@ -89,6 +90,10 @@ public class ItemRepositoryImpl implements ItemRepository {
                 userIsFounded = true;
             }
         }
+
+//        if (userRepository.get((int) userId).getId() != 0) {
+//            userIsFounded = true;
+//        }
 
         if (!userIsFounded) {
             throw new IllegalArgumentException("User not found!");
