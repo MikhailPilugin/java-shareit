@@ -13,7 +13,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Integer, Item> itemMap;
-//    private UserRepositoryImpl userRepository;
 
     @Override
     public Map<Integer, Item> getAll(Long userId) {
@@ -79,21 +78,11 @@ public class ItemRepositoryImpl implements ItemRepository {
     public Item add(long userId, Item item) {
         boolean userIsFounded = false;
 
-//        for (Map.Entry<Integer, User> userEntry : UserRepositoryImpl.userMap.entrySet()) {
-//            if (userEntry.getValue().getId() == userId) {
-//                userIsFounded = true;
-//            }
-//        }
-
         for (Integer integer : UserRepositoryImpl.setId) {
             if (integer == userId) {
                 userIsFounded = true;
             }
         }
-
-//        if (userRepository.get((int) userId).getId() != 0) {
-//            userIsFounded = true;
-//        }
 
         if (!userIsFounded) {
             throw new IllegalArgumentException("User not found!");
