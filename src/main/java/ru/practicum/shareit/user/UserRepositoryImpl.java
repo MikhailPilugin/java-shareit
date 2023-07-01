@@ -11,7 +11,7 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    public final static Set<Integer> setId = new HashSet<>();
+    public static final Set<Integer> setId = new HashSet<>();
     private Map<Integer, User> userMap = new HashMap<>();
     private int idUser = 1;
 
