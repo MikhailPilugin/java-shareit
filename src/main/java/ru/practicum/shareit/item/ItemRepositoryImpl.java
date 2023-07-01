@@ -3,7 +3,8 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.user.UserRepositoryImpl;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.util.*;
 import java.util.regex.Matcher;
@@ -13,6 +14,7 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class ItemRepositoryImpl implements ItemRepository {
     private final Map<Integer, Item> itemMap;
+    private final UserRepository userRepository;
 
     @Override
     public Map<Integer, Item> getAll(Long userId) {
@@ -77,11 +79,10 @@ public class ItemRepositoryImpl implements ItemRepository {
     @Override
     public Item add(long userId, Item item) {
         boolean userIsFounded = false;
+        User user = userRepository.get((int) userId);
 
-        for (Integer integer : UserRepositoryImpl.setId) {
-            if (integer == userId) {
-                userIsFounded = true;
-            }
+        if (user != null && user.getId() != 0) {
+            userIsFounded = true;
         }
 
         if (!userIsFounded) {

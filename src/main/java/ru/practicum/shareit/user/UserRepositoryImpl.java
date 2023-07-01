@@ -11,8 +11,6 @@ import java.util.Set;
 @Repository
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
-    @edu.umd.cs.findbugs.annotations.SuppressFBWarnings("MS_MUTABLE_COLLECTION")
-    public static final HashSet<Integer> setId = new HashSet<>();
     private Map<Integer, User> userMap = new HashMap<>();
     private int idUser = 1;
 
@@ -49,11 +47,9 @@ public class UserRepositoryImpl implements UserRepository {
             ++idUser;
             user.setId(idUser);
             userMap.putIfAbsent(idUser, user);
-            setId.add(idUser);
         } else {
             user.setId(idUser);
             userMap.put(idUser, user);
-            setId.add(idUser);
         }
         return user;
     }
