@@ -12,7 +12,7 @@ import java.util.Set;
 @RequiredArgsConstructor
 public class UserRepositoryImpl implements UserRepository {
     private Map<Integer, User> userMap = new HashMap<>();
-    public static Set<Integer> setId = new HashSet<>();
+    public final static Set<Integer> setId = new HashSet<>();
     private int idUser = 1;
 
     @Override
