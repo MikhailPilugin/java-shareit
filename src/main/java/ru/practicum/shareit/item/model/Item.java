@@ -14,4 +14,3 @@ public class Item {
     private long owner;
     private ItemRequest request;
 }
-
