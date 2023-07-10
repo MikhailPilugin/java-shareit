@@ -4,6 +4,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -12,21 +13,21 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public Collection<User> getAllUsers() {
-        return userRepository.findAll().values();
+        return userRepository.findAll();
     }
 
     @Override
-    public User getUser(Integer userId) {
-        return userRepository.get(userId);
+    public Optional getUser(Integer userId) {
+        return userRepository.findById(userId);
     }
 
     @Override
-    public User saveUser(User user) {
+    public Object saveUser(User user) {
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
             throw new IllegalArgumentException("There is no email");
         }
 
-        return userRepository.add(user);
+        return userRepository.save(user);
     }
 
     @Override

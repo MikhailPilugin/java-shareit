@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
 import java.util.Collection;
+import java.util.Optional;
 
 @RestController
 @RequestMapping(path = "/users")
@@ -18,12 +19,12 @@ public class UserController {
     }
 
     @GetMapping("/{userId}")
-    public User getUser(@PathVariable Integer userId) {
+    public Optional getUser(@PathVariable Integer userId) {
         return userService.getUser(userId);
     }
 
     @PostMapping
-    public User addUser(@RequestBody @Valid User user) {
+    public Object addUser(@RequestBody @Valid User user) {
         return userService.saveUser(user);
     }
 

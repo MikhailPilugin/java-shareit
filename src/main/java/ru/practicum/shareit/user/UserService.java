@@ -1,13 +1,14 @@
 package ru.practicum.shareit.user;
 
 import java.util.Collection;
+import java.util.Optional;
 
 public interface UserService {
     Collection<User> getAllUsers();
 
-    User getUser(Integer userId);
+    Optional getUser(Integer userId);
 
-    User saveUser(User user);
+    Object saveUser(User user);
 
     User updateUser(User user, Integer userId);
 
