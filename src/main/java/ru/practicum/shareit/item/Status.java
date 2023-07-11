@@ -1,4 +1,4 @@
-package ru.practicum.shareit.item.model;
+package ru.practicum.shareit.item;
 
 //status — статус бронирования. Может принимать одно из следующих
 //значений: WAITING — новое бронирование, ожидает одобрения, APPROVED —

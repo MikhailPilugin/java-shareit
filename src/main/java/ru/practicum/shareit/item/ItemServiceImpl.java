@@ -4,7 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemMapper;
-import ru.practicum.shareit.item.model.Item;
+import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserRepository;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -15,6 +16,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
+    private final UserRepository userRepository;
 
     @Override
     public Collection<ItemDto> getAll(Long userId) {
@@ -37,6 +39,7 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto add(Long userId, ItemDto itemDto) {
         Item item = new Item();
+        Optional<User> optionalItem = userRepository.findById(userId);
 
         if (itemDto.getAvailable() == null) {
             throw new RuntimeException("There is no available parameter in the request");
@@ -50,7 +53,19 @@ public class ItemServiceImpl implements ItemService {
             throw new RuntimeException("There is no description in the request");
         }
 
-//        item = itemRepository.add(userId, ItemMapper.toItem(itemDto));
+        item.setName(itemDto.getName());
+        item.setDescription(itemDto.getDescription());
+        item.setAvailable(itemDto.getAvailable());
+
+        if (optionalItem.isPresent()) {
+            item.setOwner(userId);
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
+
+
+        itemRepository.save(item);
+
         return ItemMapper.toItemDto(item);
     }
 
