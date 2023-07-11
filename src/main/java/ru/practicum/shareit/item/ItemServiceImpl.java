@@ -85,7 +85,32 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public ItemDto update(long itemId, ItemDto itemDto, long userId) {
 //        Item item = itemRepository.update(itemId, ItemMapper.toItem(itemDto), userId);
-        Item item = new Item();
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        Item item = optionalItem.get();
+
+        if (item.getOwner() == userId) {
+
+            if (itemDto.getName() != null) {
+                item.setName(itemDto.getName());
+            }
+
+            if (itemDto.getDescription() != null) {
+                item.setDescription(itemDto.getDescription());
+            }
+
+            if (itemDto.getAvailable() != null) {
+                item.setAvailable(itemDto.getAvailable());
+            }
+
+            if (itemDto.getOwner() != null) {
+                item.setOwner(itemDto.getOwner());
+            }
+
+        } else {
+            throw new IllegalArgumentException("Wrong user id");
+        }
+
+        itemRepository.save(item);
 
         return ItemMapper.toItemDto(item);
     }
