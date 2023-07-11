@@ -5,6 +5,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.User;
 
+import javax.persistence.Column;
 import java.time.LocalDate;
 
 /**
@@ -16,7 +17,7 @@ public class BookingDto {
     private long id;
     private LocalDate start;
     private LocalDate end;
-    private Item item;
-    private User booker;
+    private Long item;
+    private Long booker;
     private Status status;
 }

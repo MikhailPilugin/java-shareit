@@ -5,6 +5,7 @@ import ru.practicum.shareit.item.model.Item;
 import ru.practicum.shareit.item.model.Status;
 import ru.practicum.shareit.user.User;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -23,11 +24,28 @@ import java.time.LocalDate;
 //отклонено владельцем, CANCELED — бронирование отменено создателем.
 
 @Data
+@Entity
+@Table(name = "bookings")
 public class Booking {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable=false)
     private long id;
+
+    @Column(name = "start_date")
     private LocalDate start;
+
+    @Column(name = "end_date")
     private LocalDate end;
-    private Item item;
-    private User booker;
+
+    @Column(name = "item_id")
+    private Long item;
+
+    @Column(name = "booker_id")
+    private Long booker;
+
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private Status status;
 }

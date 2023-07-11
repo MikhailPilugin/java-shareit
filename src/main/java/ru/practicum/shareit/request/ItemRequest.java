@@ -3,6 +3,7 @@ package ru.practicum.shareit.request;
 import lombok.Data;
 import ru.practicum.shareit.user.User;
 
+import javax.persistence.*;
 import java.time.LocalDate;
 
 /**
@@ -15,9 +16,21 @@ import java.time.LocalDate;
 //created — дата и время создания запроса.
 
 @Data
+@Entity
+@Table(name = "requests")
 public class ItemRequest {
-    private long id;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable=false)
+    private Long id;
+
+    @Column(name = "description")
     private String description;
-    private User requestor;
+
+    @Column(name = "requestor_id")
+    private Long requestor;
+
+    @Column(name = "created_date")
     private LocalDate created;
 }

@@ -6,11 +6,11 @@ import java.util.Optional;
 public interface UserService {
     Collection<User> getAllUsers();
 
-    Optional getUser(Integer userId);
+    User getUser(Long userId);
 
-    Object saveUser(User user);
+    User saveUser(User user);
 
-    User updateUser(User user, Integer userId);
+    User updateUser(User user, Long userId);
 
-    void deleteUser(Integer userId);
+    void deleteUser(Long userId);
 }

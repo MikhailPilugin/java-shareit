@@ -4,7 +4,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Map;
 
-public interface UserRepository extends JpaRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
+//    void delete(Integer userId);
 //    Map<Integer, User> findAll();
 //
 //    User get(Integer userId);

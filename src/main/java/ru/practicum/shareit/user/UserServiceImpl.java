@@ -17,12 +17,19 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public Optional getUser(Integer userId) {
-        return userRepository.findById(userId);
+    public User getUser(Long userId) {
+        Optional<User> optUser = userRepository.findById(userId);
+
+        if (optUser.isPresent()) {
+            User newUser = optUser.get();
+            return newUser;
+        } else {
+            throw new IllegalArgumentException("User not found");
+        }
     }
 
     @Override
-    public Object saveUser(User user) {
+    public User saveUser(User user) {
         if (user.getEmail().isBlank() || user.getEmail().isEmpty()) {
             throw new IllegalArgumentException("There is no email");
         }
@@ -31,12 +38,31 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User updateUser(User user, Integer userId) {
-        return userRepository.update(user, userId);
+    public User updateUser(User user, Long userId) {
+        Optional<User> optUser = userRepository.findById(userId);
+        User newUser = optUser.get();
+
+        if (user.getId() >= 1) {
+            newUser.setId(user.getId());
+        }
+
+        if (user.getName() != null) {
+            newUser.setName(user.getName());
+        }
+
+        if (user.getEmail() != null) {
+            newUser.setEmail(user.getEmail());
+        }
+
+
+        return userRepository.save(newUser);
     }
 
     @Override
-    public void deleteUser(Integer userId) {
-        userRepository.delete(userId);
+    public void deleteUser(Long userId) {
+        Optional<User> optionalUser = userRepository.findById(userId);
+        User user = optionalUser.get();
+
+        userRepository.delete(user);
     }
 }
