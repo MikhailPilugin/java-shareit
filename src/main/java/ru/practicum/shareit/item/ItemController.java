@@ -21,11 +21,11 @@ public class ItemController {
         return itemService.getAll(userId);
     }
 
-//    @GetMapping("/{itemId}")
-//    public ItemDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
-//                       @PathVariable Long itemId) {
-//        return itemService.getById(userId, itemId);
-//    }
+    @GetMapping("/{itemId}")
+    public ItemDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
+                       @PathVariable Long itemId) {
+        return itemService.getById(userId, itemId);
+    }
 
     @GetMapping("/search")
     public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,

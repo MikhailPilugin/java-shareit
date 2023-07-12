@@ -24,17 +24,30 @@ public class ItemServiceImpl implements ItemService {
         Collection<ItemDto> itemDtoCollection = new ArrayList<>();
 
         for (Item item : itemCollection) {
-            itemDtoCollection.add(ItemMapper.toItemDto(item));
+            if (item.getOwner() == userId) {
+                itemDtoCollection.add(ItemMapper.toItemDto(item));
+            }
         }
 
         return itemDtoCollection;
     }
 
-//    @Override
-//    public ItemDto getById(Long userId, Long itemId) {
-////        return ItemMapper.toItemDto(itemRepository.getById(userId, itemId));
+    @Override
+    public ItemDto getById(Long userId, Long itemId) {
+//        return ItemMapper.toItemDto(itemRepository.getById(userId, itemId));
 //        return ItemMapper.toItemDto(itemRepository.findById(userId));
-//    }
+
+        Optional<Item> optionalItem = itemRepository.findById(itemId);
+        Item item = new Item();
+
+        if (optionalItem.isPresent()) {
+            item = optionalItem.get();
+        } else {
+            throw new IllegalArgumentException("Wrong item id");
+        }
+
+        return ItemMapper.toItemDto(item);
+    }
 
     @Override
     public ItemDto add(Long userId, ItemDto itemDto) {
@@ -72,11 +85,13 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<ItemDto> search(Long userId, String text) {
 //        List<Item> itemList = itemRepository.search(userId, text);
-        List<Item> itemList = new ArrayList<>();
+        List<Item> itemList = itemRepository.search(text);
         List<ItemDto> itemDtoList = new ArrayList<>();
 
         for (Item item : itemList) {
-            itemDtoList.add(ItemMapper.toItemDto(item));
+            if (item.getAvailable() && !text.isEmpty()) {
+                itemDtoList.add(ItemMapper.toItemDto(item));
+            }
         }
 
         return itemDtoList;
