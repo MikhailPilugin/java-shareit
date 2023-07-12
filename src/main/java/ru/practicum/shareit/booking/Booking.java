@@ -38,7 +38,7 @@ public class Booking {
     private LocalDate end;
 
     @Column(name = "item_id")
-    private Long item;
+    private Long itemId;
 
     @Column(name = "booker_id")
     private Long booker;
