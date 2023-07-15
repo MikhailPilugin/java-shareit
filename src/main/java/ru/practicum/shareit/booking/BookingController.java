@@ -9,6 +9,7 @@ import ru.practicum.shareit.item.dto.ItemDto;
 
 import javax.validation.Valid;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-bookings.
@@ -20,10 +21,10 @@ public class BookingController {
     public final BookingService bookingService;
 
     @PostMapping
-    public Booking add(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid
-    @RequestBody Booking booking) {
-//        LocalDate start = booking.getStart();
-//        LocalDate end = booking.getEnd();
+    public Booking add(@RequestHeader("X-Sharer-User-Id") Long userId,
+    @RequestBody BookingDto booking) {
+//        LocalDateTime start = booking.getStart();
+//        LocalDateTime end = booking.getEnd();
 
 
 

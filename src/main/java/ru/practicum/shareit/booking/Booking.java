@@ -1,10 +1,13 @@
 package ru.practicum.shareit.booking;
 
 import lombok.Data;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.item.Status;
+import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-bookings.
@@ -32,16 +35,18 @@ public class Booking {
     private long id;
 
     @Column(name = "start_date")
-    private LocalDate start;
+    private LocalDateTime start;
 
     @Column(name = "end_date")
-    private LocalDate end;
+    private LocalDateTime end;
 
-    @Column(name = "item_id")
-    private Long itemId;
+    @ManyToOne
+    @JoinColumn(name = "item_id")
+    private Item item;
 
-    @Column(name = "booker_id")
-    private Long booker;
+    @ManyToOne
+    @JoinColumn(name = "booker_id")
+    private User booker;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)

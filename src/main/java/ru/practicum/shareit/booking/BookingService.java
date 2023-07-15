@@ -10,7 +10,7 @@ public interface BookingService {
 //
 //    List<Booking> search(Long userId, String text);
 
-    Booking add(Long userId, Booking booking);
+    Booking add(Long userId, BookingDto booking);
 
 //    Booking update(long itemId, Booking item, long userId);
 }

@@ -4,6 +4,7 @@ import lombok.Data;
 import ru.practicum.shareit.item.Status;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
  * TODO Sprint add-bookings.
@@ -12,9 +13,9 @@ import java.time.LocalDate;
 @Data
 public class BookingDto {
     private long id;
-    private LocalDate start;
-    private LocalDate end;
-    private Long item;
-    private Long booker;
-    private Status status;
+    private LocalDateTime start;
+    private LocalDateTime end;
+    private Long itemId;
+    private Long userId;
+    private String status;
 }
