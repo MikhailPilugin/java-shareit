@@ -24,7 +24,7 @@ public class ItemServiceImpl implements ItemService {
         Collection<ItemDto> itemDtoCollection = new ArrayList<>();
 
         for (Item item : itemCollection) {
-            if (item.getOwner() == userId) {
+            if (item.getOwner().getId() == userId) {
                 itemDtoCollection.add(ItemMapper.toItemDto(item));
             }
         }
@@ -71,7 +71,7 @@ public class ItemServiceImpl implements ItemService {
         item.setAvailable(itemDto.getAvailable());
 
         if (optionalItem.isPresent()) {
-            item.setOwner(userId);
+            item.setOwner(optionalItem.get());
         } else {
             throw new IllegalArgumentException("User not found");
         }
@@ -102,8 +102,9 @@ public class ItemServiceImpl implements ItemService {
 //        Item item = itemRepository.update(itemId, ItemMapper.toItem(itemDto), userId);
         Optional<Item> optionalItem = itemRepository.findById(itemId);
         Item item = optionalItem.get();
+        User user = item.getOwner();
 
-        if (item.getOwner() == userId) {
+        if (item.getOwner().getId() == userId) {
 
             if (itemDto.getName() != null) {
                 item.setName(itemDto.getName());
@@ -118,7 +119,7 @@ public class ItemServiceImpl implements ItemService {
             }
 
             if (itemDto.getOwner() != null) {
-                item.setOwner(itemDto.getOwner());
+                item.setOwner(user);
             }
 
         } else {
