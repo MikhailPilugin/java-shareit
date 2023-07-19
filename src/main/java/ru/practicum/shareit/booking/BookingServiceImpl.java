@@ -2,13 +2,14 @@ package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.booking.dto.BookingDto;
+import ru.practicum.shareit.booking.dto.BookingMapper;
 import ru.practicum.shareit.exceptions.*;
-import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.item.Item;
-import ru.practicum.shareit.user.UserService;
+import ru.practicum.shareit.item.ItemRepository;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserService;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;

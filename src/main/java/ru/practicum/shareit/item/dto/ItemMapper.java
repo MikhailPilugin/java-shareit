@@ -1,9 +1,10 @@
 package ru.practicum.shareit.item.dto;
 
 import org.springframework.stereotype.Component;
-import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.dto.BookingDtoShort;
 import ru.practicum.shareit.item.Item;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;

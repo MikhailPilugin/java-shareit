@@ -2,21 +2,17 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.BookingRepository;
 import ru.practicum.shareit.booking.Status;
 import ru.practicum.shareit.exceptions.BookingNotAvailableException;
 import ru.practicum.shareit.exceptions.ItemNotFoundException;
 import ru.practicum.shareit.item.dto.*;
-import ru.practicum.shareit.user.UserService;
 import ru.practicum.shareit.user.User;
+import ru.practicum.shareit.user.UserService;
+
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Optional;
-import java.util.Comparator;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -57,7 +53,7 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> commentDto = commentMapper.toCommentDto(commentRepository.findByItemId(itemId));
         List<Booking> bookings;
         if (item.getOwner().getId() != userId) {
-            return itemMapper.toOwnerDto(item, commentDto,null, null);
+            return itemMapper.toOwnerDto(item, commentDto, null, null);
         } else {
             bookings = bookingRepository.findAllByItemId(itemId);
             return itemMapper.toOwnerDto(item, commentDto,
