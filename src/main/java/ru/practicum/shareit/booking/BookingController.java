@@ -3,69 +3,54 @@ package ru.practicum.shareit.booking;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import ru.practicum.shareit.booking.dto.BookingDto;
-import ru.practicum.shareit.booking.dto.BookingMapper;
-import ru.practicum.shareit.exceptions.ErrorResponse;
-import ru.practicum.shareit.item.dto.ItemDto;
+import java.util.List;
 
-import javax.validation.Valid;
-import javax.websocket.server.PathParam;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.util.Collection;
-
-/**
- * TODO Sprint add-bookings.
- */
 @RestController
-@RequiredArgsConstructor
 @RequestMapping(path = "/bookings")
+@RequiredArgsConstructor(onConstructor__ = @Autowired)
 public class BookingController {
-    public final BookingService bookingService;
+    private final BookingService bookingService;
 
     @PostMapping
-    public Booking add(@RequestHeader("X-Sharer-User-Id") Long userId,
-    @RequestBody BookingDto booking) {
-        return bookingService.add(userId, booking);
+    @ResponseStatus(HttpStatus.CREATED)
+    public BookingDto add(@RequestHeader("X-Sharer-User-Id") long userId,
+                          @RequestBody BookingDto bookingDto) {
+        return bookingService.add(userId, bookingDto);
     }
-
-    @GetMapping
-    public Collection<Booking> getAll(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                      @RequestParam(required = false) String state) {
-        return bookingService.getAll(userId, state);
-    }
-
-    @GetMapping("/{bookingId}")
-    public Booking getById(@RequestHeader("X-Sharer-User-Id") Long userId,
-                            @PathVariable Long bookingId) {
-        return bookingService.getById(userId, bookingId);
-    }
-
-    @GetMapping("/owner")
-    public Collection<Booking> getByOwner(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                          @RequestParam(required = false) String state) {
-        return bookingService.getByOwner(userId, state);
-    }
-
 
     @PatchMapping("/{bookingId}")
-    public Booking update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                           @RequestParam(required = false) Boolean approved, @PathVariable Long bookingId) {
+    public BookingDto update(@RequestHeader("X-Sharer-User-Id") long userId,
+                             @PathVariable long bookingId,
+                             @RequestParam String approved) {
         return bookingService.update(userId, bookingId, approved);
     }
 
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleRuntimeException(final RuntimeException e) {
-        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+    @GetMapping("/{bookingId}")
+    public BookingDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
+                              @PathVariable long bookingId) {
+        return bookingService.getById(bookingId, userId);
     }
 
+    @GetMapping
+    public List<BookingDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                   @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.getAll(userId, state);
+    }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
-        return new ErrorResponse("Unknown state: UNSUPPORTED_STATUS", e.getMessage());
+    @GetMapping("/owner")
+    public List<BookingDto> getByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
+                                       @RequestParam(defaultValue = "ALL") String state) {
+        return bookingService.getByOwner(userId, state);
     }
 }
