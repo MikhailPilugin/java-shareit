@@ -1,48 +1,58 @@
 package ru.practicum.shareit.user;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ErrorResponse;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import ru.practicum.shareit.user.dto.UserDto;
+import ru.practicum.shareit.user.dto.UserMapper;
 
 import javax.validation.Valid;
-import java.util.Collection;
-import java.util.Optional;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
+@RequiredArgsConstructor(onConstructor__ = @Autowired)
 @RequestMapping(path = "/users")
-@RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
-
-    @GetMapping
-    public Collection<User> getAll() {
-        return userService.getAllUsers();
-    }
-
-    @GetMapping("/{userId}")
-    public User getUser(@PathVariable Long userId) {
-        return userService.getUser(userId);
-    }
+    private final UserMapper userMapper;
 
     @PostMapping
-    public User addUser(@RequestBody @Valid User user) {
-        return userService.saveUser(user);
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDto add(@RequestBody @Valid UserDto userDto) {
+        return userService.add(userMapper.toUser(userDto));
     }
 
-    @PatchMapping("/{userId}")
-    public User updateUser(@RequestBody User user, @PathVariable Long userId) {
-        return userService.updateUser(user, userId);
+    @PatchMapping("/{id}")
+    public UserDto update(@PathVariable("id") long userId,
+                          @RequestBody UserDto userDto) {
+        return userService.update(userDto, userId);
     }
 
-    @DeleteMapping("/{userId}")
-    public void deleteUser(@PathVariable Long userId) {
-        userService.deleteUser(userId);
+    @GetMapping("/{id}")
+    public UserDto getById(@PathVariable("id") long userId) {
+        return userMapper.toUserDto(userService.getById(userId));
     }
 
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
-        return new ErrorResponse("error", e.getMessage());
+    @GetMapping
+    public List<UserDto> getAll() {
+        return userService.getAll()
+                .stream()
+                .map(userMapper::toUserDto)
+                .collect(Collectors.toList());
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable("id") long userId) {
+        userService.delete(userId);
     }
 }
