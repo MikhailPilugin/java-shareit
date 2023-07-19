@@ -4,22 +4,22 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface ItemRepository extends JpaRepository<Item, Long> {
-//    void delete(long userId);
-//    Map<Integer, Item> getAll(Long userId);
-//
-//    Item getById(Long userId, Long itemId);
-//
-//    List<Item> search(Long userId, String text);
-//
-//    Item add(long userId, Item item);
-//
-//    Item update(long itemId, Item item, long userId);
-//
-//    void deleteItem(long userId, long itemId);
-    @Query(" select i from Item i " +
-            "where upper(i.name) like upper(concat('%', ?1, '%')) " +
-            " or upper(i.description) like upper(concat('%', ?1, '%'))")
-    List<Item> search(String text);
+
+    @Query("select it " +
+            "from Item as it " +
+            "join it.owner as u " +
+            "where (lower(it.name) like %?1% or lower(it.description) like %?1%) " +
+            "and it.available=true")
+    List<Item> findAllByQuery(String query);
+
+    List<Item> findAllByOwnerId(long id);
+
+    @Query("select u.id " +
+            "from Item as it " +
+            "join it.owner as u " +
+            "where it.id = ?1")
+    Optional<Long> findOwnerIdByItemId(long itemId);
 }
