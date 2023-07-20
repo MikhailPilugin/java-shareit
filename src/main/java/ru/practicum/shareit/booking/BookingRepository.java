@@ -50,12 +50,12 @@ public interface BookingRepository extends JpaRepository<Booking, Long> {
             "and (b.start > ?2 and b.start < ?3 " +
             "or b.end>?2 and b.end<?3 " +
             "or b.start < ?2 and b.end > ?3)")
-    Optional<Booking> hasBooking(long itemId, LocalDateTime start, LocalDateTime end);
+    Optional<Booking> isItemHasBooking(long itemId, LocalDateTime start, LocalDateTime end);
 
     @Query("select b " +
             "from Booking as b " +
             "join b.booker as u " +
             "join b.item as it " +
             "where it.id in ?1")
-    List<Booking> findAllByItemIdAndOwnerId(Iterable<Long> ids);
+    List<Booking> findAllBookings(Iterable<Long> ids);
 }

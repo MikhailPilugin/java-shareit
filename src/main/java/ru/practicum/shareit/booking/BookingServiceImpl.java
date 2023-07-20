@@ -34,9 +34,9 @@ public class BookingServiceImpl implements BookingService {
         User user = userService.getById(userId);
         booking.setBooker(user);
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
-                new ItemNotFoundException("Item not found"));
+                new ItemNotFoundException(String.format("Item with id=%d not found", bookingDto.getItemId())));
         if (!item.getAvailable()
-                || bookingRepository.hasBooking(item.getId(), booking.getStart(), booking.getEnd())
+                || bookingRepository.isItemHasBooking(item.getId(), booking.getStart(), booking.getEnd())
                 .isPresent()) {
             throw new BookingNotAvailableException("Item is not available for booking");
         }
@@ -50,14 +50,13 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto update(long userId, long bookingId, String approved) {
-        User user = userService.getById(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException("Booking not found"));
-        if (!booking.getItem().getOwner().getId().equals(user.getId())) {
-            throw new UserNotFoundException("User not found");
+        if (!booking.getItem().getOwner().getId().equals(userId)) {
+            throw new UserNotFoundException("User is not owner of this item");
         }
         if (!booking.getStatus().equals(Status.WAITING)) {
-            throw new IllegalArgumentException("Wrong status");
+            throw new IllegalArgumentException("Status has already updated by owner");
         }
         try {
             boolean isApprove = Boolean.parseBoolean(approved);
@@ -68,7 +67,7 @@ public class BookingServiceImpl implements BookingService {
             }
             booking = bookingRepository.save(booking);
         } catch (Exception e) {
-            throw new IllegalArgumentException("Wrong state");
+            throw new IllegalArgumentException("Wrong parameter of approve");
         }
         return bookingMapper.toBookingDto(booking);
     }
@@ -80,7 +79,7 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
             return bookingMapper.toBookingDto(booking);
         } else {
-            throw new UserNotFoundException("User not found");
+            throw new UserNotFoundException("User is not allowed to view booking information");
         }
     }
 

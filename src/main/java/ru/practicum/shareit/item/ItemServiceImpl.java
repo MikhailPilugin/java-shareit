@@ -73,7 +73,7 @@ public class ItemServiceImpl implements ItemService {
         Map<Long, Item> mapItems = itemRepository.findAllByOwnerId(userId)
                 .stream()
                 .collect(Collectors.toMap(Item::getId, Function.identity()));
-        Map<Long, List<Booking>> mapBookings = bookingRepository.findAllByItemIdAndOwnerId(mapItems.keySet())
+        Map<Long, List<Booking>> mapBookings = bookingRepository.findAllBookings(mapItems.keySet())
                 .stream()
                 .collect(Collectors.groupingBy(booking -> booking.getItem().getId()));
         Map<Long, List<Comment>> mapComments = commentRepository.findAllByItemId(mapItems.keySet())
