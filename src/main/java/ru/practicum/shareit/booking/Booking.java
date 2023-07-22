@@ -1,33 +1,28 @@
 package ru.practicum.shareit.booking;
 
 import lombok.Data;
-import ru.practicum.shareit.item.model.Item;
-import ru.practicum.shareit.item.model.Status;
+import ru.practicum.shareit.item.Item;
 import ru.practicum.shareit.user.User;
 
-import java.time.LocalDate;
+import javax.persistence.*;
+import java.time.LocalDateTime;
 
-/**
- * TODO Sprint add-bookings.
- */
-
-//id — уникальный идентификатор бронирования;
-//start — дата и время начала бронирования;
-//end — дата и время конца бронирования;
-//item — вещь, которую пользователь бронирует;
-//booker — пользователь, который осуществляет бронирование;
-//status — статус бронирования. Может принимать одно из следующих
-//значений: WAITING — новое бронирование, ожидает одобрения, APPROVED —
-//Дополнительные советы ментора 2
-//бронирование подтверждено владельцем, REJECTED — бронирование
-//отклонено владельцем, CANCELED — бронирование отменено создателем.
-
+@Entity
+@Table(name = "bookings")
 @Data
 public class Booking {
-    private long id;
-    private LocalDate start;
-    private LocalDate end;
-    private Item item;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "user_id")
     private User booker;
+    @ManyToOne(fetch = FetchType.LAZY)
+    private Item item;
+    @Enumerated(EnumType.STRING)
     private Status status;
+    @Column(name = "start_booking")
+    private LocalDateTime start;
+    @Column(name = "end_booking")
+    private LocalDateTime end;
 }

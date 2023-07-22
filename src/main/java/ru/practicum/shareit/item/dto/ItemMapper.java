@@ -1,30 +1,63 @@
 package ru.practicum.shareit.item.dto;
 
-import ru.practicum.shareit.item.model.Item;
+import org.springframework.stereotype.Component;
+import ru.practicum.shareit.booking.Booking;
+import ru.practicum.shareit.booking.dto.BookingDtoShort;
+import ru.practicum.shareit.item.Item;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+
+@Component
 public class ItemMapper {
 
-    public static ItemDto toItemDto(Item item) {
-        ItemDto itemDto = new ItemDto();
-
-        itemDto.setId(item.getId());
-        itemDto.setName(item.getName());
-        itemDto.setDescription(item.getDescription());
-        itemDto.setAvailable(item.getAvailable());
-        itemDto.setOwner(item.getOwner());
-
-        return itemDto;
+    public ItemDto toItemDto(Item item) {
+        ItemDto dto = new ItemDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        return dto;
     }
 
-    public static Item toItem(ItemDto itemDto) {
-        Item item = new Item();
+    public List<ItemDto> toItemDto(Iterable<Item> items) {
+        List<ItemDto> result = new ArrayList<>();
+        for (Item item : items) {
+            result.add(toItemDto(item));
+        }
+        return result;
+    }
 
-        item.setId(itemDto.getId());
-        item.setName(itemDto.getName());
-        item.setDescription(itemDto.getDescription());
-        item.setAvailable(itemDto.getAvailable());
-        item.setOwner(itemDto.getOwner());
+    public ItemOwnerDto toOwnerDto(Item item, Collection<CommentDto> comments,
+                                   Booking lastBooking, Booking nextBooking) {
+        ItemOwnerDto dto = new ItemOwnerDto();
+        dto.setId(item.getId());
+        dto.setName(item.getName());
+        dto.setDescription(item.getDescription());
+        dto.setAvailable(item.getAvailable());
+        BookingDtoShort simpleLastBookingDto = null;
+        if (lastBooking != null) {
+            simpleLastBookingDto = new BookingDtoShort(lastBooking.getId(), lastBooking.getBooker().getId(),
+                    lastBooking.getEnd());
+        }
+        dto.setLastBooking(simpleLastBookingDto);
+        BookingDtoShort simpleNextBookingDto = null;
+        if (nextBooking != null) {
+            simpleNextBookingDto = new BookingDtoShort(nextBooking.getId(), nextBooking.getBooker().getId(),
+                    nextBooking.getStart());
+        }
+        dto.setNextBooking(simpleNextBookingDto);
+        dto.getComments().addAll(comments);
+        return dto;
+    }
 
-        return item;
+    public Item toItem(ItemDto itemDto) {
+        return Item.builder()
+                .name(itemDto.getName())
+                .description(itemDto.getDescription())
+                .available(itemDto.getAvailable())
+                .build();
     }
 }
+

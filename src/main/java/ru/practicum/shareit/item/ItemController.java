@@ -3,57 +3,54 @@ package ru.practicum.shareit.item;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
-import ru.practicum.shareit.exceptions.ErrorResponse;
+import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
+import ru.practicum.shareit.item.dto.ItemOwnerDto;
 
 import javax.validation.Valid;
-import java.util.Collection;
 import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/items")
 public class ItemController {
+
     private final ItemService itemService;
 
-    @GetMapping()
-    public Collection<ItemDto> getAll(@RequestHeader("X-Sharer-User-Id") Long userId) {
-        return itemService.getAll(userId);
+    @PostMapping
+    @ResponseStatus(HttpStatus.CREATED)
+    public ItemDto add(@RequestHeader("X-Sharer-User-Id") long userId,
+                       @RequestBody @Valid ItemDto itemDto) {
+        return itemService.add(userId, itemDto);
     }
 
-    @GetMapping("/{itemId}")
-    public ItemDto get(@RequestHeader("X-Sharer-User-Id") Long userId,
-                       @PathVariable Long itemId) {
+    @PatchMapping("/{id}")
+    public ItemDto update(@RequestHeader("X-Sharer-User-Id") long userId,
+                          @PathVariable("id") long itemId,
+                          @RequestBody ItemDto itemDto) {
+        return itemService.update(userId, itemId, itemDto);
+    }
+
+    @GetMapping("/{id}")
+    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
+                           @PathVariable("id") long itemId) {
         return itemService.getById(userId, itemId);
     }
 
+    @GetMapping
+    public List<ItemOwnerDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId) {
+        return itemService.getAll(userId);
+    }
+
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestHeader("X-Sharer-User-Id") Long userId,
-                                @RequestParam(required = true) String text) {
-        return itemService.search(userId, text);
+    public List<ItemDto> search(@RequestParam("text") String query) {
+        return itemService.search(query);
     }
 
-    @PostMapping
-    public ItemDto add(@RequestHeader("X-Sharer-User-Id") Long userId, @Valid
-    @RequestBody ItemDto item) {
-        return itemService.add(userId, item);
-    }
-
-    @PatchMapping("/{itemId}")
-    public ItemDto update(@RequestHeader("X-Sharer-User-Id") Long userId,
-                          @RequestBody ItemDto item, @PathVariable Integer itemId) {
-        return itemService.update(itemId, item, userId);
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleRuntimeException(final RuntimeException e) {
-        return new ErrorResponse("error", e.getMessage());
-    }
-
-    @ExceptionHandler
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ErrorResponse handleIllegalArgumentException(final IllegalArgumentException e) {
-        return new ErrorResponse("error", e.getMessage());
+    @PostMapping("/{itemId}/comment")
+    public CommentDto addComment(@RequestHeader("X-Sharer-User-Id") long userId,
+                                 @PathVariable long itemId,
+                                 @RequestBody @Valid CommentDto commentDto) {
+        return itemService.addComment(userId, itemId, commentDto);
     }
 }
