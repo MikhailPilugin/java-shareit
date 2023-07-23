@@ -6,6 +6,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.booking.dto.BookingDto;
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
@@ -36,13 +38,17 @@ public class BookingController {
 
     @GetMapping
     public List<BookingDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId,
-                                   @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getAll(userId, state);
+                                   @RequestParam(defaultValue = "ALL") String state,
+                                   @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                   @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+        return bookingService.getAll(userId, state, from, size);
     }
 
     @GetMapping("/owner")
     public List<BookingDto> getByOwner(@RequestHeader("X-Sharer-User-Id") long userId,
-                                       @RequestParam(defaultValue = "ALL") String state) {
-        return bookingService.getByOwner(userId, state);
+                                       @RequestParam(defaultValue = "ALL") String state,
+                                       @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                       @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+        return bookingService.getByOwner(userId, state, from, size);
     }
 }

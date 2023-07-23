@@ -1,6 +1,10 @@
 package ru.practicum.shareit.booking;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import ru.practicum.shareit.booking.dto.BookingDto;
 import ru.practicum.shareit.booking.dto.BookingMapper;
@@ -17,10 +21,16 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class BookingServiceImpl implements BookingService {
+
     private final BookingRepository bookingRepository;
     private final ItemRepository itemRepository;
     private final UserService userService;
-    private final BookingMapper bookingMapper;
+    private BookingMapper bookingMapper;
+
+    @Autowired
+    public void setBookingMapper(BookingMapper bookingMapper) {
+        this.bookingMapper = bookingMapper;
+    }
 
     @Override
     public BookingDto add(long userId, BookingDto bookingDto) {
@@ -30,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
                 || bookingDto.getStart().isBefore(LocalDateTime.now())) {
             throw new BookingDateTimeException("Wrong dates of booking");
         }
-        Booking booking = bookingMapper.mapToBooking(bookingDto);
+        Booking booking = bookingMapper.toBooking(bookingDto);
         User user = userService.getById(userId);
         booking.setBooker(user);
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
@@ -58,17 +68,13 @@ public class BookingServiceImpl implements BookingService {
         if (!booking.getStatus().equals(Status.WAITING)) {
             throw new IllegalArgumentException("Status has already updated by owner");
         }
-        try {
-            boolean isApprove = Boolean.parseBoolean(approved);
-            if (isApprove) {
-                booking.setStatus(Status.APPROVED);
-            } else {
-                booking.setStatus(Status.REJECTED);
-            }
-            booking = bookingRepository.save(booking);
-        } catch (Exception e) {
-            throw new IllegalArgumentException("Wrong parameter of approve");
+        boolean isApprove = Boolean.parseBoolean(approved);
+        if (isApprove) {
+            booking.setStatus(Status.APPROVED);
+        } else {
+            booking.setStatus(Status.REJECTED);
         }
+        booking = bookingRepository.save(booking);
         return bookingMapper.toBookingDto(booking);
     }
 
@@ -79,74 +85,79 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
             return bookingMapper.toBookingDto(booking);
         } else {
-            throw new UserNotFoundException("User is not allowed to view booking information");
+            throw new UserAccessException("User is not allowed to view booking information");
         }
     }
 
     @Override
-    public List<BookingDto> getAll(long userId, String stateQuery) {
+    public List<BookingDto> getAll(long userId, String stateQuery, int from, int size) {
         userService.checkUser(userId);
         State state;
-        List<Booking> result = new ArrayList<>();
+        Page<Booking> result = Page.empty();
         try {
             state = State.valueOf(stateQuery.toUpperCase());
         } catch (Exception e) {
             throw new IllegalArgumentException("Unknown state: " + stateQuery);
         }
         LocalDateTime now = LocalDateTime.now();
+        int offset = from > 0 ? from / size : 0;
+        Pageable page = PageRequest.of(offset, size);
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByBookerIdOrderByStartDesc(userId);
+                result = bookingRepository.findAllByBookerIdOrderByStartDesc(userId, page);
                 break;
             case PAST:
-                result = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, now);
+                result = bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(userId, now, page);
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now);
+                result = bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(userId, now, page);
                 break;
             case CURRENT:
-                result = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                result = bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId,
+                        now, now, page);
                 break;
             case WAITING:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.WAITING, page);
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                result = bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, page);
                 break;
         }
         return bookingMapper.toBookingDto(result);
     }
 
     @Override
-    public List<BookingDto> getByOwner(long userId, String stateQuery) {
+    public List<BookingDto> getByOwner(long userId, String stateQuery, int from, int size) {
         userService.checkUser(userId);
         State state;
-        List<Booking> result = new ArrayList<>();
+        Page<Booking> result = Page.empty();
+        int offset = from > 0 ? from / size : 0;
+        Pageable page = PageRequest.of(offset, size);
         try {
             state = State.valueOf(stateQuery.toUpperCase());
         } catch (Exception e) {
             throw new IllegalArgumentException("Unknown state: " + stateQuery);
         }
-
         LocalDateTime now = LocalDateTime.now();
         switch (state) {
             case ALL:
-                result = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId);
+                result = bookingRepository.findAllByItemOwnerIdOrderByStartDesc(userId, page);
                 break;
             case PAST:
-                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now);
+                result = bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(userId, now, page);
                 break;
             case FUTURE:
-                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now);
+                result = bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(userId, now, page);
                 break;
             case CURRENT:
-                result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(userId, now, now);
+                result = bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(
+                        userId, now, now, page);
                 break;
             case WAITING:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING);
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.WAITING, page);
                 break;
             case REJECTED:
-                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED);
+                result = bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(userId, Status.REJECTED, page);
                 break;
         }
         return bookingMapper.toBookingDto(result);

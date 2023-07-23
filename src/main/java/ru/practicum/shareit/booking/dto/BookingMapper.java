@@ -15,7 +15,7 @@ public class BookingMapper {
     private final UserMapper userMapper;
     private final ItemMapper itemMapper;
 
-    public Booking mapToBooking(BookingDto bookingDto) {
+    public Booking toBooking(BookingDto bookingDto) {
         Booking entity = new Booking();
         entity.setStart(bookingDto.getStart());
         entity.setEnd(bookingDto.getEnd());
