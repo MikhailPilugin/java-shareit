@@ -39,7 +39,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest itemRequest = itemRequestMapper.toItemRequest(itemRequestDto);
         itemRequest.setUser(userService.getById(userId));
         itemRequest = itemRequestRepository.save(itemRequest);
-        return itemRequestMapper.ItemRequestDto(itemRequest);
+        return itemRequestMapper.toItemRequestDto(itemRequest);
     }
 
     @Override
@@ -48,7 +48,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
         ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId)
                 .orElseThrow(() -> new ItemRequestNotFoundException("Не найден запрос с id=" + itemRequestId));
         itemRequest.addItems(itemRepository.findAllByItemRequestId(itemRequestId));
-        return itemRequestMapper.ItemRequestDto(itemRequest);
+        return itemRequestMapper.toItemRequestDto(itemRequest);
     }
 
     @Override
@@ -80,7 +80,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
                 .stream()
                 .map(itemRequest -> createItemRequest(itemRequest,
                         mapItems.getOrDefault(itemRequest.getId(), Collections.emptyList())))
-                .map(itemRequestMapper::ItemRequestDto)
+                .map(itemRequestMapper::toItemRequestDto)
                 .collect(Collectors.toList());
     }
 }

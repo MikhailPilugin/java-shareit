@@ -139,7 +139,7 @@ class ItemRequestServiceImplTest {
         List<ItemRequestDto> result = itemRequestService.returnUserRequests(user.getId());
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
-        assertThat(result, hasItem(itemRequestMapper.ItemRequestDto(itemRequest)));
+        assertThat(result, hasItem(itemRequestMapper.toItemRequestDto(itemRequest)));
         verify(userService).checkUser(user.getId());
         verify(itemRequestRepository).findAllByUserIdOrderByCreatedDesc(user.getId());
         verify(itemRepository).findAllByItemRequestId(Set.of(itemRequest.getId()));
@@ -153,8 +153,8 @@ class ItemRequestServiceImplTest {
         List<ItemRequestDto> result = itemRequestService.getAll(user.getId(), 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
-        assertThat(result, hasItem(itemRequestMapper.ItemRequestDto(itemRequest)));
-        assertThat(result, equalTo(itemRequestMapper.ItemRequestDto(List.of(itemRequest))));
+        assertThat(result, hasItem(itemRequestMapper.toItemRequestDto(itemRequest)));
+        assertThat(result, equalTo(itemRequestMapper.toItemRequestDto(List.of(itemRequest))));
         verify(itemRequestRepository).findByUserIdNot(user.getId(),
                 PageRequest.of(0, 2, Sort.by(Sort.Direction.DESC, "created")));
         verify(itemRepository).findAllByItemRequestId(Set.of(itemRequest.getId()));

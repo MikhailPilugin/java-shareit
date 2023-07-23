@@ -26,7 +26,7 @@ public class ItemRequestMapper {
         return itemRequest;
     }
 
-    public ItemRequestDto ItemRequestDto(ItemRequest itemRequest) {
+    public ItemRequestDto toItemRequestDto(ItemRequest itemRequest) {
         ItemRequestDto dto = new ItemRequestDto();
         dto.setId(itemRequest.getId());
         dto.setDescription(itemRequest.getDescription());
@@ -35,10 +35,10 @@ public class ItemRequestMapper {
         return dto;
     }
 
-    public List<ItemRequestDto> ItemRequestDto(Iterable<ItemRequest> itemRequests) {
+    public List<ItemRequestDto> toItemRequestDto(Iterable<ItemRequest> itemRequests) {
         List<ItemRequestDto> result = new ArrayList<>();
         for (ItemRequest itemRequest : itemRequests) {
-            result.add(ItemRequestDto(itemRequest));
+            result.add(toItemRequestDto(itemRequest));
         }
         return result;
     }
