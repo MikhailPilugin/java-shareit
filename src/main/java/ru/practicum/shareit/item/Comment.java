@@ -6,9 +6,9 @@ import ru.practicum.shareit.user.User;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
 @Table(name = "comments")
+@Data
 public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

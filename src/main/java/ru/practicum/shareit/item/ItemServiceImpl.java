@@ -23,7 +23,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor__ = @Autowired)
 public class ItemServiceImpl implements ItemService {
 
     private final ItemRepository itemRepository;
@@ -83,6 +83,7 @@ public class ItemServiceImpl implements ItemService {
             return itemMapper.toOwnerDto(item, commentDtoList,
                     defineLastBooking(bookings), defineNextBooking(bookings));
         }
+
     }
 
     @Override

@@ -1,7 +1,9 @@
 package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
@@ -13,8 +15,9 @@ import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/items")
+@RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -34,8 +37,8 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable("id") long itemId) {
+    public ItemOwnerDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                @PathVariable("id") long itemId) {
         return itemService.getById(userId, itemId);
     }
 

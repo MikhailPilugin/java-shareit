@@ -18,6 +18,9 @@ public class ItemMapper {
         dto.setName(item.getName());
         dto.setDescription(item.getDescription());
         dto.setAvailable(item.getAvailable());
+        if (item.getItemRequest() != null) {
+            dto.setRequestId(item.getItemRequest().getId());
+        }
         return dto;
     }
 
@@ -36,6 +39,9 @@ public class ItemMapper {
         dto.setName(item.getName());
         dto.setDescription(item.getDescription());
         dto.setAvailable(item.getAvailable());
+        if (item.getItemRequest() != null) {
+            dto.setRequestId(item.getItemRequest().getId());
+        }
         BookingDtoShort simpleLastBookingDto = null;
         if (lastBooking != null) {
             simpleLastBookingDto = new BookingDtoShort(lastBooking.getId(), lastBooking.getBooker().getId(),
