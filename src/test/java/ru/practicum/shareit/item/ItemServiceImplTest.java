@@ -124,7 +124,7 @@ class ItemServiceImplTest {
         ItemRequestNotFoundException exception = assertThrows(ItemRequestNotFoundException.class, () ->
                 itemService.add(user.getId(), itemDto));
 
-        assertThat(exception.getMessage(), equalTo("Не найден запрос с id=" + itemRequest.getId()));
+        assertThat(exception.getMessage(), equalTo("Request with id=" + itemRequest.getId() + " not found"));
         verify(userService).getById(user.getId());
         verify(itemRequestRepository).findById(itemRequest.getId());
         verify(itemRepository, never()).save(any());
@@ -227,7 +227,7 @@ class ItemServiceImplTest {
                 itemService.update(user.getId(), itemId, itemDto));
 
         assertThat(exception.getMessage(), equalTo(
-                String.format("Пользователь id=%d не является владельцем вещи id=%d", user.getId(), itemId)));
+                String.format("User id=%d is not owner of item with id=%d", user.getId(), itemId)));
         verify(userService).getById(user.getId());
         verify(itemRepository).findOwnerIdByItemId(itemId);
         verify(itemRepository, never()).save(any());
@@ -244,7 +244,7 @@ class ItemServiceImplTest {
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () ->
                 itemService.update(user.getId(), itemId, itemDto));
 
-        assertThat(exception.getMessage(), equalTo(String.format("Вещь с id=%d не найдена", itemId)));
+        assertThat(exception.getMessage(), equalTo(String.format("Item with id=%d not found", itemId)));
         verify(userService).getById(user.getId());
         verify(itemRepository).findOwnerIdByItemId(itemId);
         verify(itemRepository).findById(itemId);
@@ -259,7 +259,7 @@ class ItemServiceImplTest {
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () ->
                 itemService.getById(user.getId(), item.getId()));
 
-        assertThat(exception.getMessage(), equalTo(String.format("Вещь с id=%d не найдена", item.getId())));
+        assertThat(exception.getMessage(), equalTo(String.format("Item with id=%d not found", item.getId())));
         verify(itemRepository).findById(item.getId());
     }
 
@@ -376,7 +376,7 @@ class ItemServiceImplTest {
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () ->
                 itemService.deleteById(itemDto.getId()));
 
-        assertThat(exception.getMessage(), equalTo(String.format("Вещь с id=%d не найдена", itemDto.getId())));
+        assertThat(exception.getMessage(), equalTo(String.format("Item with id=%d not found", itemDto.getId())));
         verify(itemRepository).existsById(itemDto.getId());
         verify(itemRepository, never()).deleteById(anyLong());
         verifyNoMoreInteractions(itemRepository);
@@ -417,7 +417,7 @@ class ItemServiceImplTest {
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () ->
                 itemService.addComment(user.getId(), item.getId(), new CommentDto()));
 
-        assertThat(exception.getMessage(), equalTo(String.format("Вещь с id=%d не найдена", item.getId())));
+        assertThat(exception.getMessage(), equalTo(String.format("Item with id=%d not found", item.getId())));
         verify(userService).getById(user.getId());
         verify(itemRepository).findById(item.getId());
         verifyNoMoreInteractions(userService, itemRepository);
@@ -433,7 +433,7 @@ class ItemServiceImplTest {
                 itemService.addComment(user.getId(), item.getId(), new CommentDto()));
 
         assertThat(exception.getMessage(), equalTo(
-                String.format("Пользователь id=%d не пользовался вещью id=%d", user.getId(), item.getId())));
+                String.format("User with id=%d is not owner of item with id=%d", user.getId(), item.getId())));
         verify(userService).getById(user.getId());
         verify(itemRepository).findById(item.getId());
         verify(bookingRepository).findSuccessfulUserBooking(item.getId(), user.getId());

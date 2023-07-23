@@ -102,7 +102,7 @@ class BookingServiceImplTest {
         BookingDateTimeException exception = assertThrows(BookingDateTimeException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Некорректные даты бронирования"));
+        assertThat(exception.getMessage(), equalTo("Incorrect dates of booking"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -113,7 +113,7 @@ class BookingServiceImplTest {
         ItemNotFoundException exception = assertThrows(ItemNotFoundException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo(String.format("Вещь с id=%d не найдена", bookingDto.getItemId())));
+        assertThat(exception.getMessage(), equalTo(String.format("Item with id=%d not found", bookingDto.getItemId())));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -125,7 +125,7 @@ class BookingServiceImplTest {
         BookingNotAvailableException exception = assertThrows(BookingNotAvailableException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("вещь недоступна для бронирования"));
+        assertThat(exception.getMessage(), equalTo("Item is not allowed for booking"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -138,7 +138,7 @@ class BookingServiceImplTest {
         BookingNotAvailableException exception = assertThrows(BookingNotAvailableException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("вещь недоступна для бронирования"));
+        assertThat(exception.getMessage(), equalTo("Item is not allowed for booking"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -153,7 +153,7 @@ class BookingServiceImplTest {
         BookingNotFoundException exception = assertThrows(BookingNotFoundException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Владелец не может бронировать свою вещь"));
+        assertThat(exception.getMessage(), equalTo("Owner cant book own item"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -191,7 +191,7 @@ class BookingServiceImplTest {
         BookingNotFoundException exception = assertThrows(BookingNotFoundException.class, () ->
                 bookingService.update(booker.getId(), booking.getId(), "APPROVED"));
 
-        assertThat(exception.getMessage(), equalTo("Бронирование не найдено"));
+        assertThat(exception.getMessage(), equalTo("Booking not found"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -203,7 +203,7 @@ class BookingServiceImplTest {
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 bookingService.update(booker.getId(), booking.getId(), "APPROVED"));
 
-        assertThat(exception.getMessage(), equalTo("Вещь не пренадлежит пользователю"));
+        assertThat(exception.getMessage(), equalTo("Item is not own by this user"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -216,7 +216,7 @@ class BookingServiceImplTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingService.update(owner.getId(), booking.getId(), "APPROVED"));
 
-        assertThat(exception.getMessage(), equalTo("Статус был подтверждён владельцем ранее"));
+        assertThat(exception.getMessage(), equalTo("Status is accepted by owner previously"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -260,7 +260,7 @@ class BookingServiceImplTest {
         BookingNotFoundException exception = assertThrows(BookingNotFoundException.class, () ->
                 bookingService.getById(booking.getId(), booker.getId()));
 
-        assertThat(exception.getMessage(), equalTo("Бронирование не найдено"));
+        assertThat(exception.getMessage(), equalTo("Booking not found"));
     }
 
     @Test
@@ -271,7 +271,7 @@ class BookingServiceImplTest {
                 bookingService.getById(booking.getId(), -1));
 
         assertThat(exception.getMessage(),
-                equalTo("Пользователю запрещёно просматривать информацию по бронированию"));
+                equalTo("User is not allowed to see the information about this item"));
     }
 
     @Test

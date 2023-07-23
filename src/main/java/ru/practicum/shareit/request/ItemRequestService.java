@@ -13,4 +13,3 @@ public interface ItemRequestService {
 
     List<ItemRequestDto> getAll(long userId, int from, int size);
 }
-

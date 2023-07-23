@@ -77,7 +77,7 @@ public class ItemServiceImpl implements ItemService {
         List<CommentDto> commentDtoList = commentMapper.toCommentDto(commentRepository.findByItemId(itemId));
         List<Booking> bookings;
         if (item.getOwner().getId() != userId) {
-            return itemMapper.toOwnerDto(item, commentDtoList,null, null);
+            return itemMapper.toOwnerDto(item, commentDtoList, null, null);
         } else {
             bookings = bookingRepository.findAllByItemId(itemId);
             return itemMapper.toOwnerDto(item, commentDtoList,
