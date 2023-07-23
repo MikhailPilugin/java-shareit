@@ -124,7 +124,7 @@ class ItemServiceImplTest {
         ItemRequestNotFoundException exception = assertThrows(ItemRequestNotFoundException.class, () ->
                 itemService.add(user.getId(), itemDto));
 
-        assertThat(exception.getMessage(), equalTo("Request with id=" + itemRequest.getId() + " not found"));
+        assertThat(exception.getMessage(), equalTo("Item request with id=" + itemRequest.getId() + " not found"));
         verify(userService).getById(user.getId());
         verify(itemRequestRepository).findById(itemRequest.getId());
         verify(itemRepository, never()).save(any());
@@ -227,7 +227,7 @@ class ItemServiceImplTest {
                 itemService.update(user.getId(), itemId, itemDto));
 
         assertThat(exception.getMessage(), equalTo(
-                String.format("User id=%d is not owner of item with id=%d", user.getId(), itemId)));
+                String.format("User with id=%d is not owner of the item with id=%d", user.getId(), itemId)));
         verify(userService).getById(user.getId());
         verify(itemRepository).findOwnerIdByItemId(itemId);
         verify(itemRepository, never()).save(any());
@@ -355,7 +355,7 @@ class ItemServiceImplTest {
     void getItemsByUserId() {
         doNothing().when(userService).checkUser(anyLong());
         when(itemRepository.findAllByOwnerId(anyLong(), any())).thenReturn(new PageImpl<>(List.of(item)));
-        when(bookingRepository.findAllBookings(anyCollection())).thenReturn(List.of(booking));
+        when(bookingRepository.findAllByItemId(anyCollection())).thenReturn(List.of(booking));
         when(commentRepository.findAllByItemId(anyCollection())).thenReturn(List.of(firstComment, secondComment));
 
         List<ItemOwnerDto> result = itemService.getAll(user.getId(), 0, 2);
@@ -364,7 +364,7 @@ class ItemServiceImplTest {
         assertThat(result, hasSize(1));
         verify(userService).checkUser(user.getId());
         verify(itemRepository).findAllByOwnerId(user.getId(), PageRequest.of(0, 2));
-        verify(bookingRepository).findAllBookings(Set.of(item.getId()));
+        verify(bookingRepository).findAllByItemId(Set.of(item.getId()));
         verify(commentRepository).findAllByItemId(Set.of(item.getId()));
         verifyNoMoreInteractions(userService, itemRepository, bookingRepository, commentRepository);
     }
@@ -433,7 +433,7 @@ class ItemServiceImplTest {
                 itemService.addComment(user.getId(), item.getId(), new CommentDto()));
 
         assertThat(exception.getMessage(), equalTo(
-                String.format("User with id=%d is not owner of item with id=%d", user.getId(), item.getId())));
+                String.format("User with id=%d don't use item with id=%d", user.getId(), item.getId())));
         verify(userService).getById(user.getId());
         verify(itemRepository).findById(item.getId());
         verify(bookingRepository).findSuccessfulUserBooking(item.getId(), user.getId());

@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor(onConstructor__ = @Autowired)
 public class BookingServiceImpl implements BookingService {
 
     private final BookingRepository bookingRepository;
@@ -45,12 +45,12 @@ public class BookingServiceImpl implements BookingService {
         Item item = itemRepository.findById(bookingDto.getItemId()).orElseThrow(() ->
                 new ItemNotFoundException(String.format("Item with id=%d not found", bookingDto.getItemId())));
         if (!item.getAvailable()
-                || bookingRepository.isItemHasBooking(item.getId(), booking.getStart(), booking.getEnd())
+                || bookingRepository.findBookingWithSameDate(item.getId(), booking.getStart(), booking.getEnd())
                 .isPresent()) {
             throw new BookingNotAvailableException("Item is not available for booking");
         }
         if (item.getOwner().getId().equals(booking.getBooker().getId())) {
-            throw new BookingNotFoundException("Booking not found");
+            throw new BookingNotFoundException("Owner cannot book his thing");
         }
         booking.setItem(item);
         booking.setStatus(Status.WAITING);
@@ -59,13 +59,14 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingDto update(long userId, long bookingId, String approved) {
+        User user = userService.getById(userId);
         Booking booking = bookingRepository.findById(bookingId).orElseThrow(() ->
                 new BookingNotFoundException("Booking not found"));
-        if (!booking.getItem().getOwner().getId().equals(userId)) {
-            throw new UserNotFoundException("User is not owner of this item");
+        if (!booking.getItem().getOwner().getId().equals(user.getId())) {
+            throw new UserNotFoundException("Item don't belong to the user");
         }
         if (!booking.getStatus().equals(Status.WAITING)) {
-            throw new IllegalArgumentException("Status has already updated by owner");
+            throw new IllegalArgumentException("Status was confirmed by the owner earlier");
         }
         boolean isApprove = Boolean.parseBoolean(approved);
         if (isApprove) {
@@ -84,12 +85,12 @@ public class BookingServiceImpl implements BookingService {
         if (booking.getBooker().getId() == userId || booking.getItem().getOwner().getId() == userId) {
             return bookingMapper.toBookingDto(booking);
         } else {
-            throw new UserAccessException("User is not allowed to view booking information");
+            throw new UserAccessException("User is prohibited to view the booking information");
         }
     }
 
     @Override
-    public List<BookingDto> getAll(long userId, String stateQuery, int from, int size) {
+    public List<BookingDto> getUserBookings(long userId, String stateQuery, int from, int size) {
         userService.checkUser(userId);
         State state;
         Page<Booking> result = Page.empty();
@@ -126,7 +127,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public List<BookingDto> getByOwner(long userId, String stateQuery, int from, int size) {
+    public List<BookingDto> getItemsBookings(long userId, String stateQuery, int from, int size) {
         userService.checkUser(userId);
         State state;
         Page<Booking> result = Page.empty();

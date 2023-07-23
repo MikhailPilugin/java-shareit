@@ -111,7 +111,7 @@ class ItemRequestServiceImplTest {
         ItemRequestNotFoundException exception = assertThrows(ItemRequestNotFoundException.class, () ->
                 itemRequestService.getById(user.getId(), itemRequest.getId()));
 
-        assertThat(exception.getMessage(), equalTo("Request with id=" + itemRequest.getId() + " not found"));
+        assertThat(exception.getMessage(), equalTo("Request not found id=" + itemRequest.getId()));
         verify(itemRepository, never()).findAllByItemRequestId(anyLong());
     }
 

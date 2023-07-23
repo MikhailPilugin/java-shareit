@@ -46,7 +46,7 @@ public class ItemRequestServiceImpl implements ItemRequestService {
     public ItemRequestDto getById(long userId, long itemRequestId) {
         userService.checkUser(userId);
         ItemRequest itemRequest = itemRequestRepository.findById(itemRequestId)
-                .orElseThrow(() -> new ItemRequestNotFoundException("Не найден запрос с id=" + itemRequestId));
+                .orElseThrow(() -> new ItemRequestNotFoundException("Request not found id=" + itemRequestId));
         itemRequest.addItems(itemRepository.findAllByItemRequestId(itemRequestId));
         return itemRequestMapper.toItemRequestDto(itemRequest);
     }

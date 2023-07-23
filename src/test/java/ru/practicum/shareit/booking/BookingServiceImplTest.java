@@ -102,7 +102,7 @@ class BookingServiceImplTest {
         BookingDateTimeException exception = assertThrows(BookingDateTimeException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Incorrect dates of booking"));
+        assertThat(exception.getMessage(), equalTo("Wrong dates of booking"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -125,20 +125,20 @@ class BookingServiceImplTest {
         BookingNotAvailableException exception = assertThrows(BookingNotAvailableException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Item is not allowed for booking"));
+        assertThat(exception.getMessage(), equalTo("Item is not available for booking"));
         verify(bookingRepository, never()).save(any());
     }
 
     @Test
     void addNew_whenItemAlreadyBooked_thenThrowBookingNotAvailableException() {
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(bookingRepository.isItemHasBooking(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(bookingRepository.findBookingWithSameDate(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.of(booking));
 
         BookingNotAvailableException exception = assertThrows(BookingNotAvailableException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Item is not allowed for booking"));
+        assertThat(exception.getMessage(), equalTo("Item is not available for booking"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -147,13 +147,13 @@ class BookingServiceImplTest {
         booking.setBooker(owner);
         when(userService.getById(anyLong())).thenReturn(owner);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(bookingRepository.isItemHasBooking(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(bookingRepository.findBookingWithSameDate(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
 
         BookingNotFoundException exception = assertThrows(BookingNotFoundException.class, () ->
                 bookingService.add(owner.getId(), bookingDto));
 
-        assertThat(exception.getMessage(), equalTo("Owner cant book own item"));
+        assertThat(exception.getMessage(), equalTo("Owner cannot book his thing"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -162,7 +162,7 @@ class BookingServiceImplTest {
         long bookingId = random.nextInt(32);
         when(userService.getById(anyLong())).thenReturn(booker);
         when(itemRepository.findById(anyLong())).thenReturn(Optional.of(item));
-        when(bookingRepository.isItemHasBooking(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
+        when(bookingRepository.findBookingWithSameDate(anyLong(), any(LocalDateTime.class), any(LocalDateTime.class)))
                 .thenReturn(Optional.empty());
         when(bookingRepository.save(any(Booking.class))).thenAnswer(invocationOnMock -> {
             Booking argBooking = invocationOnMock.getArgument(0, Booking.class);
@@ -180,7 +180,7 @@ class BookingServiceImplTest {
         assertThat(savedDto, equalTo(bookingMapper.toBookingDto(booking)));
         verify(userService).getById(booker.getId());
         verify(itemRepository).findById(item.getId());
-        verify(bookingRepository).isItemHasBooking(item.getId(), bookingDto.getStart(), bookingDto.getEnd());
+        verify(bookingRepository).findBookingWithSameDate(item.getId(), bookingDto.getStart(), bookingDto.getEnd());
         verify(bookingRepository).save(any());
     }
 
@@ -203,7 +203,7 @@ class BookingServiceImplTest {
         UserNotFoundException exception = assertThrows(UserNotFoundException.class, () ->
                 bookingService.update(booker.getId(), booking.getId(), "APPROVED"));
 
-        assertThat(exception.getMessage(), equalTo("Item is not own by this user"));
+        assertThat(exception.getMessage(), equalTo("Item don't belong to the user"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -216,7 +216,7 @@ class BookingServiceImplTest {
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
                 bookingService.update(owner.getId(), booking.getId(), "APPROVED"));
 
-        assertThat(exception.getMessage(), equalTo("Status is accepted by owner previously"));
+        assertThat(exception.getMessage(), equalTo("Status was confirmed by the owner earlier"));
         verify(bookingRepository, never()).save(any());
     }
 
@@ -271,7 +271,7 @@ class BookingServiceImplTest {
                 bookingService.getById(booking.getId(), -1));
 
         assertThat(exception.getMessage(),
-                equalTo("User is not allowed to see the information about this item"));
+                equalTo("User is prohibited to view the booking information"));
     }
 
     @Test
@@ -288,7 +288,7 @@ class BookingServiceImplTest {
     void getUserBookings_whenIncomingIncorrectState_thenThrowIllegalArgumentException() {
         String state = "state";
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingService.getAll(booker.getId(), state, 0, 2));
+                bookingService.getUserBookings(booker.getId(), state, 0, 2));
 
         assertThat(exception.getMessage(), equalTo("Unknown state: " + state));
     }
@@ -299,7 +299,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdOrderByStartDesc(anyLong(), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -312,7 +312,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndEndBeforeOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -326,7 +326,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStartAfterOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -340,7 +340,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -354,7 +354,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(anyLong(), any(Status.class), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -368,7 +368,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByBookerIdAndStatusOrderByStartDesc(anyLong(), any(Status.class), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getAll(booker.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getUserBookings(booker.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -380,7 +380,7 @@ class BookingServiceImplTest {
     void getItemsBookings_whenIncomingIncorrectState_thenThrowIllegalArgumentException() {
         String state = "state";
         IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
-                bookingService.getByOwner(owner.getId(), state, 0, 2));
+                bookingService.getItemsBookings(owner.getId(), state, 0, 2));
 
         assertThat(exception.getMessage(), equalTo("Unknown state: " + state));
     }
@@ -391,7 +391,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdOrderByStartDesc(anyLong(), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -404,7 +404,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdAndEndBeforeOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -418,7 +418,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdAndStartAfterOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -432,7 +432,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdAndStartBeforeAndEndAfterOrderByStartDesc(anyLong(),
                 any(LocalDateTime.class), any(LocalDateTime.class), any())).thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -446,7 +446,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(Status.class), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));
@@ -460,7 +460,7 @@ class BookingServiceImplTest {
         when(bookingRepository.findAllByItemOwnerIdAndStatusOrderByStartDesc(anyLong(), any(Status.class), any()))
                 .thenReturn(new PageImpl<>(List.of(booking)));
 
-        List<BookingDto> result = bookingService.getByOwner(owner.getId(), state, 0, 2);
+        List<BookingDto> result = bookingService.getItemsBookings(owner.getId(), state, 0, 2);
 
         assertThat(result, allOf(notNullValue(), hasSize(1)));
         assertThat(result, hasItem(bookingMapper.toBookingDto(booking)));

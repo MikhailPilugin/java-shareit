@@ -126,7 +126,7 @@ class BookingControllerTest {
         long userId = 1L;
         String state = "ALL";
         List<BookingDto> dtos = List.of(new BookingDto(), new BookingDto());
-        when(bookingService.getAll(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(dtos);
+        when(bookingService.getUserBookings(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(dtos);
 
         mockMvc.perform(get("/bookings")
                         .header("X-Sharer-User-Id", userId)
@@ -138,7 +138,7 @@ class BookingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
 
-        verify(bookingService, times(1)).getAll(userId, state, 0, 2);
+        verify(bookingService, times(1)).getUserBookings(userId, state, 0, 2);
         verifyNoMoreInteractions(bookingService);
     }
 
@@ -148,7 +148,7 @@ class BookingControllerTest {
         long userId = 1L;
         String state = "ALL";
         List<BookingDto> dtos = List.of(new BookingDto(), new BookingDto());
-        when(bookingService.getByOwner(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(dtos);
+        when(bookingService.getItemsBookings(anyLong(), anyString(), anyInt(), anyInt())).thenReturn(dtos);
 
         mockMvc.perform(get("/bookings/owner")
                         .header("X-Sharer-User-Id", userId)
@@ -160,7 +160,7 @@ class BookingControllerTest {
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$", hasSize(2)));
 
-        verify(bookingService, times(1)).getByOwner(userId, state, 0, 2);
+        verify(bookingService, times(1)).getItemsBookings(userId, state, 0, 2);
         verifyNoMoreInteractions(bookingService);
     }
 }

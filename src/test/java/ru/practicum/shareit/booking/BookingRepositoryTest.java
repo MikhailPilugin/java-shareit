@@ -267,7 +267,7 @@ class BookingRepositoryTest {
     void findAllByCollectionItemId() {
         bookingRepository.save(booking);
 
-        List<Booking> result = bookingRepository.findAllBookings(Set.of(item.getId()));
+        List<Booking> result = bookingRepository.findAllByItemId(Set.of(item.getId()));
 
         assertThat(result).isNotNull()
                 .isNotEmpty()
@@ -296,7 +296,7 @@ class BookingRepositoryTest {
         booking.setEnd(now.plusDays(1));
         bookingRepository.save(booking);
 
-        Optional<Booking> result = bookingRepository.isItemHasBooking(item.getId(), now, now.plusDays(2));
+        Optional<Booking> result = bookingRepository.findBookingWithSameDate(item.getId(), now, now.plusDays(2));
 
         assertThat(result).isNotNull()
                 .isPresent()
