@@ -12,13 +12,13 @@ public interface ItemService {
 
     ItemDto update(long userId, long itemId, ItemDto dto);
 
-    ItemDto getById(long userId, long itemId);
+    ItemOwnerDto getById(long userId, long itemId);
 
-    void deleteItem(long itemId);
+    void deleteById(long itemId);
 
-    List<ItemOwnerDto> getAll(long userId);
+    List<ItemOwnerDto> getAll(long userId, int from, int size);
 
-    List<ItemDto> search(String query);
+    List<ItemDto> search(String query, int from, int size);
 
     CommentDto addComment(long userId, long itemId, CommentDto commentDto);
 }

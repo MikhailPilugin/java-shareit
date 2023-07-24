@@ -2,17 +2,21 @@ package ru.practicum.shareit.item;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ru.practicum.shareit.item.dto.CommentDto;
 import ru.practicum.shareit.item.dto.ItemDto;
 import ru.practicum.shareit.item.dto.ItemOwnerDto;
 
 import javax.validation.Valid;
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 @RestController
-@RequiredArgsConstructor
 @RequestMapping("/items")
+@RequiredArgsConstructor
+@Validated
 public class ItemController {
 
     private final ItemService itemService;
@@ -32,19 +36,23 @@ public class ItemController {
     }
 
     @GetMapping("/{id}")
-    public ItemDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
-                           @PathVariable("id") long itemId) {
+    public ItemOwnerDto getById(@RequestHeader("X-Sharer-User-Id") long userId,
+                                @PathVariable("id") long itemId) {
         return itemService.getById(userId, itemId);
     }
 
     @GetMapping
-    public List<ItemOwnerDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId) {
-        return itemService.getAll(userId);
+    public List<ItemOwnerDto> getAll(@RequestHeader("X-Sharer-User-Id") long userId,
+                                     @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                     @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+        return itemService.getAll(userId, from, size);
     }
 
     @GetMapping("/search")
-    public List<ItemDto> search(@RequestParam("text") String query) {
-        return itemService.search(query);
+    public List<ItemDto> search(@RequestParam("text") String query,
+                                @RequestParam(defaultValue = "0") @Min(0) Integer from,
+                                @RequestParam(defaultValue = "20") @Min(1) @Max(100) Integer size) {
+        return itemService.search(query, from, size);
     }
 
     @PostMapping("/{itemId}/comment")

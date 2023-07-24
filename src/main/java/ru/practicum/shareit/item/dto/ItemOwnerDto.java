@@ -1,14 +1,16 @@
 package ru.practicum.shareit.item.dto;
 
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
+import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import ru.practicum.shareit.booking.dto.BookingDtoShort;
 
 import java.util.HashSet;
 import java.util.Set;
 
+@EqualsAndHashCode(callSuper = true)
 @Data
-@RequiredArgsConstructor
+@NoArgsConstructor
 public class ItemOwnerDto extends ItemDto {
     private BookingDtoShort lastBooking;
     private BookingDtoShort nextBooking;

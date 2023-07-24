@@ -1,5 +1,6 @@
 package ru.practicum.shareit.exceptions;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.FieldError;
@@ -14,11 +15,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 @RestControllerAdvice
+@Slf4j
 public class ErrorHandler {
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleNotFoundException(EntityNotFoundException exception) {
+        log(exception);
         return new ErrorResponse(exception.getMessage());
     }
 
@@ -33,48 +36,60 @@ public class ErrorHandler {
                     String message = error.getDefaultMessage();
                     errorReport.put(fieldName, message);
                 });
+        log.warn("{}: {}", ex.getClass().getSimpleName(), errorReport);
         return new ErrorResponse(errorReport.keySet().toString() + errorReport.values());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.CONFLICT)
     public ErrorResponse handleEmailExistingException(EmailExistingException exception) {
+        log(exception);
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     protected ErrorResponse handleHttpMessageNotReadable(HttpMessageNotReadableException exception) {
-        return new ErrorResponse("Wrong JSON");
+        log(exception);
+        return new ErrorResponse("Получен некорректный формат JSON");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public ErrorResponse handleHttpRequestMethodNotSupportedEx(HttpRequestMethodNotSupportedException exeption) {
-        return new ErrorResponse("Method not found");
+        log(exeption);
+        return new ErrorResponse("Метод не реализован");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleMissingRequestHeaderException(MissingRequestHeaderException exception) {
-        return new ErrorResponse("User id not found");
+        log(exception);
+        return new ErrorResponse("Отсутствует параметр UserID в заголовке сообщения");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleIllegalArgumentException(IllegalArgumentException exception) {
+        log(exception);
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler({BookingNotAvailableException.class, BookingDateTimeException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleBookingException(RuntimeException exception) {
+        log(exception);
         return new ErrorResponse(exception.getMessage());
     }
 
     @ExceptionHandler
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ErrorResponse handleCommentNotAllowedException(CommentNotAllowedException exception) {
+    @ResponseStatus(HttpStatus.NOT_FOUND)
+    public ErrorResponse handleUserAccessException(UserAccessException exception) {
+        log(exception);
         return new ErrorResponse(exception.getMessage());
+    }
+
+    private void log(Exception ex) {
+        log.warn("{}: {}", ex.getClass().getSimpleName(), ex.getMessage());
     }
 }
