@@ -14,7 +14,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping(path = "/requests")
-@RequiredArgsConstructor(onConstructor__ = @Autowired)
+@RequiredArgsConstructor
 @Validated
 public class ItemRequestController {
 
