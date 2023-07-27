@@ -18,7 +18,6 @@ public class ItemRequest {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @NotBlank
     @Column(nullable = false)
     private String description;
     @JoinColumn(name = "requestor_id")

@@ -9,11 +9,7 @@ import java.time.LocalDateTime;
 @Builder
 public class BookingShortDto {
     private Long id;
-//    @NotNull
-//    @FutureOrPresent
     private LocalDateTime start;
-//    @NotNull
-//    @FutureOrPresent
     private LocalDateTime end;
     private Long itemId;
     private Long bookerId;

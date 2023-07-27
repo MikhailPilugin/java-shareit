@@ -13,7 +13,6 @@ import java.util.List;
 @AllArgsConstructor
 public class ItemRequestDto {
     private Long id;
-//    @NotBlank
     private String description;
     private final LocalDateTime created;
     private List<ItemDto> items;

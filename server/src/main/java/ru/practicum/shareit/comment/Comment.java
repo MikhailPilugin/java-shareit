@@ -18,7 +18,6 @@ public class Comment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @NotBlank
     @Column(length = 1000, nullable = false)
     private String text;
     @ManyToOne

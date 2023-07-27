@@ -16,13 +16,10 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-//    @NotBlank
     @Column(nullable = false)
     private String name;
-//    @NotBlank
     @Column(nullable = false)
     private String description;
-//    @NotNull
     @Column(name = "is_available")
     private Boolean available;
     @ManyToOne
