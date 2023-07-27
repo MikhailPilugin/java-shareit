@@ -5,19 +5,17 @@ import lombok.Data;
 import ru.practicum.shareit.booking.dto.BookingShortDto;
 import ru.practicum.shareit.comment.dto.CommentDto;
 
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.List;
 
 @Data
 @Builder(toBuilder = true)
 public class ItemDto {
     private Long id;
-    @NotBlank
+//    @NotBlank
     private String name;
-    @NotBlank
+//    @NotBlank
     private String description;
-    @NotNull
+//    @NotNull
     private Boolean available;
     private Long requestId;
     private BookingShortDto lastBooking;

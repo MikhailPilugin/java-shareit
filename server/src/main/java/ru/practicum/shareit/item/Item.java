@@ -4,8 +4,6 @@ import lombok.*;
 import ru.practicum.shareit.user.User;
 
 import javax.persistence.*;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 @Entity
 @Table(name = "items")
@@ -18,13 +16,13 @@ public class Item {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @NotBlank
+//    @NotBlank
     @Column(nullable = false)
     private String name;
-    @NotBlank
+//    @NotBlank
     @Column(nullable = false)
     private String description;
-    @NotNull
+//    @NotNull
     @Column(name = "is_available")
     private Boolean available;
     @ManyToOne
